@@ -1,8 +1,8 @@
 # About Drawing Timer
 
-Practice drawing different things by giving yourself time limits. Pick your reference photos, set a time limit and complete lots of drawings quickly.
+Practice drawing different things by giving yourself time limits. Pick your reference photos, set a time limit and complete multiple drawings quickly.
 
-## Runs inside your web browser
+## Runs in your web browser
 
 Use Drawing Timer on your phone, tablet or desktop. It works on the latest versions of Chrome, Firefox, Safari (unconfirmed) and Opera. No installation required, just unzip it and open the `.htm` file.
 
