@@ -556,3 +556,58 @@ img {
 .template {
 	display: none;
 }
+.field-elements-wrapper {
+	display: flex;
+	position: relative;
+}
+.btn-choices {
+	padding: 0 10px;
+	text-align: center;
+	border: 1px solid hsl(0,0%,75%);
+	background: hsl(0,0%,95%);
+	border-radius: 0 3px 3px 0;
+	cursor: default;
+	box-sizing: border-box;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	display: flex;
+	align-items: center;
+}
+.btn-choices:after {
+	content: '//';
+	color: hsl(0,0%,50%);
+	font-weight: bold;
+	display: block;
+	width: 100%;
+}
+.btn-choices:hover {
+	border-color: hsl(0,0%,55%);
+}
+.btn-choices.open {
+	border-color: hsl(0,0%,55%);
+	background-color: hsl(0,0%,85%);
+}
+.container-choices {
+	list-style: none;
+	position: absolute;
+	right: 0;
+	top: 100%;
+	min-width: 200px;
+	max-height: 200px;
+	white-space: nowrap;
+	overflow-y: auto;
+	margin: 0;
+	padding: 0;
+	border: 1px solid hsl(0,0%,75%);
+	background: hsl(0,0%,100%);
+	box-shadow: 1px 1px 1px 0 hsla(0,0%,0%,.2);
+	cursor: default;
+}
+.container-choices li {
+	padding: 2px 10px;
+	cursor: default;
+}
+.container-choices li:hover {
+	color: white;
+	background: hsl(207,50%,50%);
+}
