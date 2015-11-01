@@ -147,7 +147,6 @@ input[required] {
 	line-height: 1.2;
 	height: 100%;
 	padding: 0px 8px;
-	vertical-align: -webkit-baseline-middle;
 	box-sizing: border-box;
 	cursor: pointer;
 }
@@ -557,6 +556,7 @@ img {
 	display: none;
 }
 .field-elements-wrapper {
+	display: -webkit-flex;
 	display: flex;
 	position: relative;
 }
@@ -570,7 +570,9 @@ img {
 	box-sizing: border-box;
 	-webkit-user-select: none;
 	-moz-user-select: none;
+	display: -webkit-flex;
 	display: flex;
+	-webkit-align-items: center;
 	align-items: center;
 }
 .btn-choices:after {
