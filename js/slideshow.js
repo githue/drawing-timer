@@ -2,114 +2,35 @@
 /* global $ */
 $(document).ready(function () {
 	var addVersionNumber = (function () {
-		var v = '0.9.0';
+		var v = '0.9.1';
 		$('.version').text(v);
 	})();
 	var localStorageRequired = (function () {
 		if (!Boolean(localStorage)) {
-			alert('Error: the web browser doesn\'t allow local storage. Drawing Timer is confirmed to work with Chrome, Firefox and Opera.');
+			alert('Error: the web browser doesn\'t allow local storage.\
+			Drawing Timer is confirmed to work with Chrome, Firefox and Opera.');
 		}
 	})();
-	
-	var navigation = {
-		init: function () {
-			this.selectMenuItem();
-			window.addEventListener('hashchange', this.selectMenuItem.bind(this), false);
-
-			hideElements(controls.element);
-			$('#menu a[href="#slideshow"]').parent().hide();
-
-			// Set window size. NWJS only?
-			// TODO: only run on app load and remember size.
-			//window.resizeTo(window.screen.availWidth / 2, window.screen.availHeight);
-		},
-		selectMenuItem: function () {
-			var hash = location.hash
-			, link
-			, active = document.querySelector('#menu .selected');
-
-			// If there's no hash, go to #albums, triggering change event,
-			// which runs selectMenuItem(), now with hash.
-			if (!hash) {
-				document.location.hash = '#albums';
-				return;
-			}
-			link = document.querySelector('#menu a[href="' + hash + '"]');
-
-			if (active) { active.classList.remove('selected'); }
-			link.parentNode.classList.add('selected');
-			this.openPage(hash);
-		},
-		openPage: function (hash) {
-			document.body.id = document.location.hash.replace('#', 'page-');
-			modal.hide();
-			showElements(document.querySelector('#menu'), 'fast');
-
-			switch (hash) {
-				case '#slideshow':
-					slideshow.show();
-					settings.resetForm();
-					break;
-				case '#albums':
-					albums.show();
-					settings.resetForm();
-					break;
-				case '#setup':
-					settings.show();
-					break;
-				case '#about':
-					about.show();
-					settings.resetForm();
-					break;
-			}
-		}
-	};
 	/**
 	 * The setup page.
 	 */
-	var settings = {
-		init: function () {
-			var preview = document.querySelector('#preview');
-			var previewImg = document.createElement('img');
-			previewImg.setAttribute('alt', 'Cover image. Did you get the image from the correct folder?');
-			preview.classList.add('hidden');
-			preview.appendChild(previewImg);
-			
-			document.querySelector('#reset').addEventListener('click', this.resetForm.bind(this), false);
-			document.querySelector('#save').addEventListener('click', this.handleSave.bind(this), false);
-			
-			document.querySelector('#delete-all').addEventListener('click', this.deleteAllData, false);
-
-			// get image file names on change event.
-			this.fileListToTextarea(document.querySelector('#album-images')
-			, document.querySelector('#album-images-data'));
-			this.fileListToTextarea(document.querySelector('#album-cover')
-			, document.querySelector('#album-cover-data'));
-			
-			if (isNWJS()) {
-				$('.hide-nwjs').hide();
-			}
-			$('#delete').hide();
-			document.querySelector('#delete').disabled = true;
-			document.querySelector('#delete').addEventListener('click', this.deleteData.bind(this), false);
-		},
-		show: function () {
-			slideshow.pause();
-			document.querySelector('#album-name').focus();
-		},
+	var settings = (function () {
+		var preview = document.querySelector('#preview');
+		var previewImg = document.createElement('img');
+		
 		// Retrieve absolute folder path. NWJS only.
-		previewListener: function (e) {
+		var previewListener = function (e) {
 			var $t = $(e.currentTarget).parent().find('input[type="file"]')
-			, path = this.directoryPathFromFile($t[0]);
+			, path = directoryPathFromFile($t[0]);
 
 			if (path) {
 				document.querySelector('#album-path').value = path;
 			}
 
-			this.getPreview(path);
-		},
+			getPreview(path);
+		};
 		// Show preview image.
-		getPreview: function (path) {
+		var getPreview = function (path) {
 			var noCover = document.querySelector('#field-cover .files-info').classList.contains('empty')
 			, preview = document.querySelector('#preview')
 			, images = document.querySelector('#album-images-data').value.split(',')
@@ -132,8 +53,8 @@ $(document).ready(function () {
 			document.querySelector('#field-cover').classList.remove('hidden');
 
 			preview.querySelector('img').setAttribute('src', path + cover);
-		},
-		handleSave: function (e) {
+		};
+		var handleSave = function (e) {
 			var cover = document.querySelector('#album-cover-data').value.split()
 			, images = document.querySelector('#album-images-data').value.split(',')
 			, form = document.querySelector('#setup form')
@@ -155,7 +76,7 @@ $(document).ready(function () {
 				cover = null;
 			}
 
-			removeErrorMessages(form);
+			formErrors.remove(form);
 			if (localStorage.getItem(album) && (originalAlbum !== album)) {
 				valid = false;
 				errors.dupe = 'Album name is not unique.';
@@ -173,13 +94,13 @@ $(document).ready(function () {
 				errors.images = 'At least two images are required.';
 			}
 			if (!valid) {
-				for (var prop in errorMessages(errors)) {
-					form.insertBefore(errorMessages(errors)[prop], form.querySelector('h2'));
+				for (var prop in formErrors.list(errors)) {
+					form.insertBefore(formErrors.list(errors)[prop], form.querySelector('h2'));
 				}
 				return;
 			}
 			
-			this.add(album, {
+			add(album, {
 				dataType: 'drawingtimer-album',
 				path: path,
 				images: images,
@@ -194,21 +115,21 @@ $(document).ready(function () {
 			if (originalAlbum !== null && (originalAlbum !== album)) {
 				localStorage.removeItem(originalAlbum);
 			}
-			this.resetForm();
+			resetForm();
 			document.location.hash = '#albums';
-		},
-		add: function (key, data) {
+		};
+		var add = function (key, data) {
 			localStorage.setItem(key, JSON.stringify(data));
-		},
-		deleteData: function (e) {
+		};
+		var deleteData = function (e) {
 			var key = document.querySelector('#album-name').value;
 			e.preventDefault();
 			localStorage.removeItem(key);
 			successMessage('Deleted album successfully', 3000);
-			this.resetForm();
+			resetForm();
 			document.location.hash = '#albums';
-		},
-		deleteAllData: function (e) {
+		};
+		var deleteAllData = function (e) {
 			var confirm = window.confirm('Are you sure you want to delete all stored data for Drawing Timer?');
 			e.preventDefault();
 			if (confirm) {
@@ -216,41 +137,9 @@ $(document).ready(function () {
 				successMessage('All data associated with Drawing Timer was removed.', 3000);
 				location.hash = '#albums';
 			}
-		},
-		// Populate the form for editing an album.
-		edit: function () {
-			var key = getCurrentAlbumKey();
-			var data = JSON.parse(localStorage.getItem(key));
-
-			// Use data attr to store original album name, so we can delete the
-			// old album if the name changes.
-			document.querySelector('#setup form').setAttribute('data-album', key);
-			document.querySelector('#setup h2').innerHTML = 'Edit <em>' + key + '</em>';
-
-			// Show file information to user.
-			if (data.cover) {
-				$('#album-cover').parent().find('.files-info div')
-					.text(data.cover)
-					.parent().removeClass('empty');
-			}
-			if (data.images.length > 0) {
-				$('#album-images').parent().find('.files-info div')
-					.text(data.images.length + ' images')
-					.parent().removeClass('empty');
-			}
-
-			document.querySelector('#album-name').value = key;
-			document.querySelector('#album-path').value = data.path;
-			document.querySelector('#album-images-data').value = data.images;
-			document.querySelector('#album-cover-data').value = data.cover;
-
-			settings.getPreview(addTrailingSlash(data.path));
-
-			$('#delete').show();
-			document.querySelector('#delete').disabled = false;
-		},
-		fileListToTextarea: function (input, tempStorage) {
-			input.addEventListener('change', (function (e) {
+		};
+		var fileListToTextarea = function (input, tempStorage) {
+			input.addEventListener('change', function (e) {
 				var output = [];
 				var files = e.target.files;
 				var $filesInfo = $(e.currentTarget).parent().find('.files-info');
@@ -277,10 +166,10 @@ $(document).ready(function () {
 				}
 				
 				// TODO: check if listener is doubling up.
-				this.previewListener(e);
-			}).bind(this), false);
-		},
-		directoryPathFromFile: function (input) {
+				previewListener(e);
+			}, false);
+		};
+		var directoryPathFromFile = function (input) {
 			var result;
 
 			if ((input.files.length > 0) && (input.files[0].path)) {
@@ -294,8 +183,8 @@ $(document).ready(function () {
 				result = document.querySelector('#album-path').value;
 			}
 			return result;
-		},
-		resetForm: function () {
+		};
+		var resetForm = function () {
 			var form = document.querySelector('#setup form');
 			form.querySelector('#album-name').value = null;
 			form.querySelector('#album-path').value = null;
@@ -308,74 +197,134 @@ $(document).ready(function () {
 			$('.field-item .files-info div').text(null);
 			$('.field-item .files-info').addClass('empty');
 			form.setAttribute('data-album', null);
-			removeErrorMessages(form);
-			this.getPreview(null);
-		},
-	};
-	settings.init();
+			formErrors.remove(form);
+			getPreview(null);
+		};
+		
+		previewImg.setAttribute('alt', 'Cover image. Did you get the image from the correct folder?');
+		preview.classList.add('hidden');
+		preview.appendChild(previewImg);
+		
+		document.querySelector('#reset').addEventListener('click', resetForm, false);
+		document.querySelector('#save').addEventListener('click', handleSave, false);
+		
+		document.querySelector('#delete-all').addEventListener('click', deleteAllData, false);
+
+		// get image file names on change event.
+		fileListToTextarea(document.querySelector('#album-images')
+		, document.querySelector('#album-images-data'));
+		fileListToTextarea(document.querySelector('#album-cover')
+		, document.querySelector('#album-cover-data'));
+		
+		if (isNWJS()) {
+			$('.hide-nwjs').hide();
+		}
+		$('#delete').hide();
+		document.querySelector('#delete').disabled = true;
+		document.querySelector('#delete').addEventListener('click', deleteData, false);
+		
+		// Methods.
+		return {
+			show: function () {
+				slideshow.pause();
+				document.querySelector('#album-name').focus();
+			},
+			edit: function () {
+				var key = getCurrentAlbumKey();
+				var data = JSON.parse(localStorage.getItem(key));
+	
+				// Use data attr to store original album name, so we can delete the
+				// old album if the name changes.
+				document.querySelector('#setup form').setAttribute('data-album', key);
+				document.querySelector('#setup h2').innerHTML = 'Edit <em>' + key + '</em>';
+	
+				// Show file information to user.
+				if (data.cover) {
+					$('#album-cover').parent().find('.files-info div')
+						.text(data.cover)
+						.parent().removeClass('empty');
+				}
+				if (data.images.length > 0) {
+					$('#album-images').parent().find('.files-info div')
+						.text(data.images.length + ' images')
+						.parent().removeClass('empty');
+				}
+	
+				document.querySelector('#album-name').value = key;
+				document.querySelector('#album-path').value = data.path;
+				document.querySelector('#album-images-data').value = data.images;
+				document.querySelector('#album-cover-data').value = data.cover;
+	
+				getPreview(addTrailingSlash(data.path));
+	
+				$('#delete').show();
+				document.querySelector('#delete').disabled = false;
+			}
+		};
+	})();
 	/** 
 	 * Displaying and loading albums.
 	 */
-	var albums = {
-		init: function () {},
-		show: function () {
-			// Remove all items before adding them back in. Like refresh.
-			$('#albums li.album:not(.template)').remove();
-			this.display();
-			
-			slideshow.pause();
-			$('#start').show();
-			$('#pause, #back, #next').hide();
-		},
-		display: function () {
-			var key, data, path;
-			var container = document.querySelector('#albums ul');
-			var album;
-
-			for (var i = 0; i < localStorage.length; i++) {
-				key = localStorage.key(i);
-				data = localStorage.getItem(key);
-				album = container.querySelector('.album.template').cloneNode(true);
-				album.classList.remove('template');
-
-				// check if string should be JSON'd.
-				if (data.charAt(0) !== '{') continue;
-
-				data = JSON.parse(data);
-				if (data.dataType !== 'drawingtimer-album') continue;
-
-				album.setAttribute('data-album', key);
-				album.addEventListener('click', this.load.bind(this), false);
+	var albums = (function () {
+		return {
+			show: function () {
+				// Remove all items before adding them back in. Like refresh.
+				$('#albums li.album:not(.template)').remove();
+				this.display();
 				
-				path = makePath(data.path);
-				
-				if (data.cover) {
-					album.querySelector('img').setAttribute('src', path + data.cover);
+				slideshow.pause();
+				$('#start').show();
+				$('#pause, #back, #next').hide();
+			},
+			display: function () {
+				var key, data, path;
+				var container = document.querySelector('#albums ul');
+				var album;
+	
+				for (var i = 0; i < localStorage.length; i++) {
+					key = localStorage.key(i);
+					data = localStorage.getItem(key);
+					album = container.querySelector('.album.template').cloneNode(true);
+					album.classList.remove('template');
+	
+					// check if string should be JSON'd.
+					if (data.charAt(0) !== '{') continue;
+	
+					data = JSON.parse(data);
+					if (data.dataType !== 'drawingtimer-album') continue;
+	
+					album.setAttribute('data-album', key);
+					album.addEventListener('click', this.load.bind(this), false);
+					
+					path = makePath(data.path);
+					
+					if (data.cover) {
+						album.querySelector('img').setAttribute('src', path + data.cover);
+					}
+					else {
+						album.querySelector('img').setAttribute('src', path + data.images[0]);
+					}
+					
+					album.querySelector('.label').textContent = key;
+					
+					container.appendChild(album);
 				}
-				else {
-					album.querySelector('img').setAttribute('src', path + data.images[0]);
-				}
+				container.appendChild(document.querySelector('#new-album'));
+			},
+			load: function (event) {
+				var key = event.currentTarget.getAttribute('data-album');
+				var data = JSON.parse(localStorage.getItem(key));
 				
-				album.querySelector('.label').textContent = key;
+				$('#controls')[0].setAttribute('data-album', key);
+				$('#controls .header').text(key);
+				$('#count').text(data.images.length);
 				
-				container.appendChild(album);
+				$('#albums li').removeClass('selected');
+				event.currentTarget.classList.add('selected');
+				modal.show();
 			}
-			container.appendChild(document.querySelector('#new-album'));
-		},
-		load: function (event) {
-			var key = event.currentTarget.getAttribute('data-album');
-			var data = JSON.parse(localStorage.getItem(key));
-			
-			controls.element.setAttribute('data-album', key);
-			$('#controls .header').text(key);
-			$('#count').text(data.images.length);
-			
-			$('#albums li').removeClass('selected');
-			event.currentTarget.classList.add('selected');
-			modal.show();
 		}
-	};
-	albums.init();
+	})();
 
 	var playlist = {
 		create: function (files) {
@@ -410,7 +359,7 @@ $(document).ready(function () {
 	};
 	
 	var endOfPlaylist = function () {
-		slideshow.img.removeAttribute('src');
+		$('#slideshow img')[0].removeAttribute('src');
 	};
 	
 	var history = {
@@ -434,161 +383,32 @@ $(document).ready(function () {
 			history.forward();
 		}
 	};
-	var slideshow = {
-		element: document.querySelector('#picture'),
-		img: document.querySelector('#picture img'),
-		init: function () {
-			// event listeners.
-			this.addListeners();
-		},
-		show: function () {
-			$('#menu a[href="#slideshow"]').parent().show();
-			
-			if (document.body.classList.contains('timer-on')) {
-				slideshow.resume();
-			}
-			$('#start').hide();
-			$('#pause, #back, #next').show();
-			// If a slideshow is open.
-			if (slideshow.album) {
-				$('#controls .header').text(slideshow.album);
-				$('#count').text(slideshow.images.length);
-				controls.element.setAttribute('data-album', this.album);
-			} else {
-				location.hash = '#albums';
-				$('#menu a[href="#slideshow"]').parent().hide();
-			}
-			hideElements(document.querySelector('#menu'), 'slow');
-		},
-		launch: function (album) {
-			this.album = album;
-			this.data = JSON.parse(localStorage.getItem(this.album));
-			this.images = this.data.images;
-			this.path = makePath(this.data.path);
-			
-			playlist.create(this.images);
+	
+	var touchContainer = new Hammer(document.querySelector('#slideshow'));
+	
+	var slideshow = (function () {
+		var element = document.querySelector('#picture');
+		var elements = document.querySelectorAll('#controls, #menu');
+		var img = document.querySelector('#picture img');
 
-			document.body.classList.add('timer-on');
-			$('#menu a[href="#slideshow"]').parent().show();
+		var page = document.querySelector('#slideshow');
+		var hideElementsTimeout;
+		var cancelHideListener = function () {
+			clearTimeout(hideElementsTimeout);
+			hideElementsTimeout = null;
+		};
 
-			this.next();
-			// Go to slideshow page after a small delay.
-			// Avoids showing a flash of the previous slideshow.
-			setTimeout(function () {
-				location.replace('#slideshow');
-			}, 0);
-
-			$('#speed').change(function () {
-				if (location.hash === '#slideshow') {
-					slideshow.reset();
-					slideshow.getDelay();
-					slideshow.addTimer();
-					slideshow.resume();
-				}
-			});
-		},
-		getDelay: function () {
-			this.delayPeriod = $('#speed option:selected').val();
-		},
-		reset: function () {
-			$('#time').countdown('destroy');
-		},
-		next: function () {
-			hideElements(this.img.parentNode, 'fast');
-			slideshow.reset();
-			slideshow.getDelay();
-			
-			// Change the image after the last one's had time to fade out.
-			setTimeout(function () {
-				findNextImage();
-			}, 500);
-
-			// Reveal the new image when it's ready
-			setTimeout(function () {
-				// Don't resume timer if there's no source image.
-				if (slideshow.img.getAttribute('src')) {
-					slideshow.addTimer();
-					slideshow.resume();
-				}
-				showElements(slideshow.img.parentNode, 'fast');
-			}, 500);
-		},
-		previous: function () {
-			hideElements(this.img.parentNode, 'fast');
-			slideshow.reset();
-			slideshow.getDelay();
-			
-			setTimeout(function () {
-				history.back();
-			}, 500);
-			
-			setTimeout(function () {
-				slideshow.addTimer();
-				slideshow.resume();
-				showElements(slideshow.img.parentNode, 'fast');
-			}, 500);
-		},
-		pause: function () {
-			$('#time').countdown('pause');
-			document.body.classList.add('timer-paused');
-		},
-		resume: function () {
-			$('#time').countdown('resume');
-			document.body.classList.remove('timer-paused');
-		},
-		changeImageTo: function (name) {
-			var file = this.path + name;
-			if (name) {
-				this.img.setAttribute('src', file);
-			} else {
-				endOfPlaylist();
-			}
-		},
-		addListeners: function () {
-			var page = document.querySelector('#slideshow');
-			var elements = document.querySelectorAll('#controls, #menu');
-
-			$('#next').click((function () {
-				this.next();
-			}).bind(this));
-
-			$('#back').click((function () {
-				this.previous();
-			}).bind(this));
-
-			touchContainer.on('swipeleft', (function (ev) {
-				this.next();
-				hideElements(elements, 'fast');
-			}).bind(this));
-
-			touchContainer.on('swiperight', (function (ev) {
-				this.previous();
-				hideElements(elements, 'fast');
-			}).bind(this));
-			
-			// Watch for mouse movement or touch.
-			page.addEventListener('mousemove', this.movementListener, false);
-			page.addEventListener('touchend', this.touchListener, false);
-			
-			for (var i = 0; i < elements.length; i++) {
-				elements[i].addEventListener('mouseenter', this.cancelHideListener, false);
-			}
-		},
-		mouseStopped: function () {
-			var elements = document.querySelectorAll('#controls, #menu');
-			slideshow.cancelHideListener();
-			hideElements(elements, 'fast');
-		},
-		movementListener: function (e) {
-			var elements = document.querySelectorAll('#controls, #menu');
+		var movementListener = function (e) {
 			if (touch.touched) return;
-			slideshow.cancelHideListener();
+			cancelHideListener();
 			showElements(elements, 'fast');
-			slideshow.hideElementsTimeout = setTimeout(slideshow.mouseStopped, 1000);
-		},
-		touchListener: function (e) {
-			var elements = document.querySelectorAll('#controls, #menu');
-			
+			hideElementsTimeout = setTimeout(mouseStopped, 1000);
+		};
+		var mouseStopped = function () {
+			cancelHideListener();
+			hideElements(elements, 'fast');
+		};
+		var touchListener = function (e) {
 			// Create touched property to intercept mousemove event.
 			touch.touched = true;
 	
@@ -598,97 +418,151 @@ $(document).ready(function () {
 			else {
 				showElements(elements, 'fast');
 			}
-		},
-		cancelHideListener: function () {
-			clearTimeout(slideshow.hideElementsTimeout);
-			slideshow.hideElementsTimeout = null;
-		},
-		addTimer: function () {
-			$('#time').countdown({
-				until: +slideshow.delayPeriod,
-				format: 'MS',
-				compact: true,
-				onExpiry: function () {
-					slideshow.next();
-				}
-			});
+		};
+
+		touchContainer.on('swipeleft', function (ev) {
+			slideshow.next();
+			hideElements(elements, 'fast');
+		});
+
+		touchContainer.on('swiperight', function (ev) {
+			slideshow.previous();
+			hideElements(elements, 'fast');
+		});
+		
+		// Watch for mouse movement or touch.
+		page.addEventListener('mousemove', movementListener, false);
+		page.addEventListener('touchend', touchListener, false);
+		
+		for (var i = 0; i < elements.length; i++) {
+			elements[i].addEventListener('mouseenter', cancelHideListener, false);
 		}
-	};
-	
-	var touchContainer = new Hammer(document.querySelector('#slideshow'));
-	slideshow.init();
-	
-	var about = {
-		init: function () {},
-		show: function () {
-			slideshow.pause();
-		}
-	}
-	about.init();
-	
-	/**
-	 * Contains all the slideshow controls.
-	 * Can be accessed from different pages.
-	 */
-	var controls = {
-		element: document.querySelector('#controls'),
-		init: function () {
-			toSwitch($('#desaturate')[0], this.grayscale);
-			toSwitch($('#shrink')[0], this.shrink);
-			
-			this.addListeners();
-			document.querySelector('#edit').addEventListener('click', settings.edit, false);
-		},
-		addListeners: function () {
-			this.startListener();
-			this.pauseListener();
-		},
-		startListener: function () {
-			$('#start').click(function () {
-				var key = $('#albums li.selected').data('album');
-				slideshow.launch(key);
-			});
-		},
-		pauseListener: function () {
-			$('#pause').click(function () {
-				if (document.body.classList.contains('timer-paused')) {
+
+		return {
+			show: function () {
+				$('#menu a[href="#slideshow"]').parent().show();
+				
+				if (document.body.classList.contains('timer-on')) {
 					slideshow.resume();
-				} else {
-					slideshow.pause();
 				}
-			});
-		},
-		grayscale: function (target) {
-			if (target.checked) {
-				document.body.classList.add('desaturate');
-			} else {
-				document.body.classList.remove('desaturate');
-			}
-		},
-		shrink: function (target) {
-			if (target.checked) {
-				document.body.classList.add('shrink');
-				touchContainer.get('swipe').set({ enable: true });
-			} else {
-				document.body.classList.remove('shrink');
-				// Allow movile device users to pan around full-size image.
-				touchContainer.get('swipe').set({ enable: false });
+				$('#start').hide();
+				$('#pause, #back, #next').show();
+				// If a slideshow is open.
+				if (slideshow.album) {
+					$('#controls .header').text(slideshow.album);
+					$('#count').text(slideshow.images.length);
+					$('#controls')[0].setAttribute('data-album', this.album);
+				} else {
+					location.hash = '#albums';
+					$('#menu a[href="#slideshow"]').parent().hide();
+				}
+				hideElements(document.querySelector('#menu'), 'slow');
+			},
+			launch: function (album) {
+				this.album = album;
+				this.data = JSON.parse(localStorage.getItem(this.album));
+				this.images = this.data.images;
+				this.path = makePath(this.data.path);
+				
+				playlist.create(this.images);
+	
+				document.body.classList.add('timer-on');
+				$('#menu a[href="#slideshow"]').parent().show();
+	
+				slideshow.next();
+				// Go to slideshow page after a small delay.
+				// Avoids showing a flash of the previous slideshow.
+				setTimeout(function () {
+					location.replace('#slideshow');
+				}, 0);
+	
+				$('#speed').change(function () {
+					if (location.hash === '#slideshow') {
+						slideshow.reset();
+						slideshow.getDelay();
+						slideshow.addTimer();
+						slideshow.resume();
+					}
+				});
+			},
+			getDelay: function () {
+				this.delayPeriod = $('#speed option:selected').val();
+			},
+			reset: function () {
+				$('#time').countdown('destroy');
+			},
+			next: function () {
+				hideElements(img.parentNode, 'fast');
+				slideshow.reset();
+				slideshow.getDelay();
+				
+				// Change the image after the last one's had time to fade out.
+				setTimeout(function () {
+					findNextImage();
+				}, 500);
+	
+				// Reveal the new image when it's ready
+				setTimeout(function () {
+					// Don't resume timer if there's no source image.
+					if (img.getAttribute('src')) {
+						slideshow.addTimer();
+						slideshow.resume();
+					}
+					showElements(img.parentNode, 'fast');
+				}, 500);
+			},
+			previous: function () {
+				hideElements(img.parentNode, 'fast');
+				slideshow.reset();
+				slideshow.getDelay();
+				
+				setTimeout(function () {
+					history.back();
+				}, 500);
+				
+				setTimeout(function () {
+					slideshow.addTimer();
+					slideshow.resume();
+					showElements(img.parentNode, 'fast');
+				}, 500);
+			},
+			pause: function () {
+				$('#time').countdown('pause');
+				document.body.classList.add('timer-paused');
+			},
+			resume: function () {
+				$('#time').countdown('resume');
+				document.body.classList.remove('timer-paused');
+			},
+			changeImageTo: function (name) {
+				var file = this.path + name;
+				if (name) {
+					img.setAttribute('src', file);
+				} else {
+					endOfPlaylist();
+				}
+			},
+			addTimer: function () {
+				$('#time').countdown({
+					until: +slideshow.delayPeriod,
+					format: 'MS',
+					compact: true,
+					onExpiry: function () {
+						slideshow.next();
+					}
+				});
 			}
 		}
-	};
-	var modal = {
-		init: function () {
-			this.element = document.querySelector('#modal');
-			this.element.addEventListener('click', this.hide, false);
-		},
-		show: function () {
-			showElements([modal.element, controls.element], 'fast');
-		},
-		hide: function () {
-			hideElements([modal.element, controls.element], 'fast');
+	})();
+	
+	var about = (function () {
+		return {
+			show: function () {
+				slideshow.pause();
+			}
 		}
-	};
-	modal.init();
+	})();
+	
 	/**
 	 * Turn checkboxes into Material switches.
 	 * @param {object} checkbox
@@ -715,6 +589,60 @@ $(document).ready(function () {
 		newSwitch.classList.add('widget');
 		label.insertBefore(newSwitch, checkbox);
 	}
+	/**
+	 * Contains all the slideshow controls.
+	 * Can be accessed from different pages.
+	 */
+	var controls = (function () {
+		var element = document.querySelector('#controls');
+		var grayscale = function (target) {
+			if (target.checked) {
+				document.body.classList.add('desaturate');
+			} else {
+				document.body.classList.remove('desaturate');
+			}
+		};
+		var shrink = function (target) {
+			if (target.checked) {
+				document.body.classList.add('shrink');
+				touchContainer.get('swipe').set({ enable: true });
+			} else {
+				document.body.classList.remove('shrink');
+				// Allow mobile devices to pan around full-size image.
+				touchContainer.get('swipe').set({ enable: false });
+			}
+		};
+		
+		toSwitch($('#desaturate')[0], grayscale);
+		toSwitch($('#shrink')[0], shrink);
+		
+		$('#next').click(slideshow.next);
+		$('#back').click(slideshow.previous);
+		
+		$('#start').click(function () {
+			var key = $('#albums li.selected').data('album');
+			slideshow.launch(key);
+		});
+		$('#pause').click(function () {
+			if (document.body.classList.contains('timer-paused')) {
+				slideshow.resume();
+			} else {
+				slideshow.pause();
+			}
+		});
+
+		document.querySelector('#edit').addEventListener('click', settings.edit, false);
+
+		return {
+			open: function (speed) {
+				showElements(element, speed);
+			},
+			close: function (speed) {
+				hideElements(element, speed);
+			}
+		}
+	})();
+	
 	/**
 	 * Hide transition.
 	 * @param {object} element - The node to apply the transition to.
@@ -744,6 +672,20 @@ $(document).ready(function () {
 		}
 	};
 	var touch = {};
+	
+	var modal = (function () {
+		var element = document.querySelector('#modal');
+		var hide = function () {
+			hideElements([element, $('#controls')[0]], 'fast');
+		};
+		element.addEventListener('click', hide, false);
+		return {
+			show: function () {
+				showElements([$('#modal')[0], $('#controls')[0]], 'fast');
+			},
+			hide: hide
+		}
+	})();
 	/**
 	 * Check if we're running inside nw.js.
 	 */
@@ -775,29 +717,28 @@ $(document).ready(function () {
 		return document.body.appendChild(element);
 	};
 	/**
-	 * Create a list of nodes containing unique error messages.
-	 * @param {object} errors
+	 * Create or remove a list of form error messages.
 	 */
-	var errorMessages = function (errors) {
-		var elements = {};
-		
-		for (var prop in errors) {
-			elements[prop] = document.createElement('div');
-			elements[prop].classList.add('error');
-			elements[prop].textContent = errors[prop];
+	var formErrors = {
+		/* @param {object} errors - List of messages. */
+		list: function (errors) {
+			var elements = {};
+			for (var prop in errors) {
+				elements[prop] = document.createElement('div');
+				elements[prop].classList.add('error');
+				elements[prop].textContent = errors[prop];
+			}
+			return elements;
+		},
+		/* @param {object} form - Container element. */
+		remove: function (form) {
+			var elements = form.querySelectorAll('.error');
+			for (var i = 0; i < elements.length; i++) {
+				elements[i].remove();
+			}
 		}
-		
-		return elements;
+
 	};
-	/**
-	 * @param {object} container
-	 */
-	var removeErrorMessages = function (container) {
-		var elements = container.querySelectorAll('.error');
-		for (var i = 0; i < elements.length; i++) {
-			elements[i].remove();
-		}
-	}
 	var getCurrentAlbumKey = function () {
 		return document.querySelector('#controls').getAttribute('data-album');
 	}
@@ -819,6 +760,7 @@ $(document).ready(function () {
 		return str;
 	}
 	var makePath = compose(addFilePrefix, addTrailingSlash);
+	
 	/**
 	 * Keyboard shortcuts
 	 */
@@ -866,15 +808,62 @@ $(document).ready(function () {
 				document.querySelector('#speed').focus();
 			}
 			if (k === 87) { // [w]
-				if (controls.element.classList.contains('hide')) {
-					showElements([controls.element, document.querySelector('#menu')], 'fast');
+				if ($('#controls')[0].classList.contains('hide')) {
+					showElements([$('#controls')[0], document.querySelector('#menu')], 'fast');
 				} else {
-					hideElements([controls.element, document.querySelector('#menu')], 'fast');
+					hideElements([$('#controls')[0], document.querySelector('#menu')], 'fast');
 				}
 			}
 		}
 
 	}, false);
-	navigation.init();
-	controls.init();
+	
+	var navigate = (function () {
+		var openPage = function (hash) {
+			document.body.id = document.location.hash.replace('#', 'page-');
+			modal.hide();
+			showElements(document.querySelector('#menu'), 'fast');
+
+			switch (hash) {
+				case '#slideshow':
+					slideshow.show();
+					//settings.resetForm();
+					break;
+				case '#albums':
+					albums.show();
+					//settings.resetForm();
+					break;
+				case '#setup':
+					settings.show();
+					break;
+				case '#about':
+					about.show();
+					//settings.resetForm();
+					break;
+			}
+		};
+		var selectMenuItem = function () {
+			var hash = location.hash
+			, link
+			, active = document.querySelector('#menu .selected');
+
+			// If there's no hash, go to #albums, triggering change event,
+			// which runs selectMenuItem(), now with hash.
+			if (!hash) {
+				document.location.hash = '#albums';
+				return;
+			}
+			link = document.querySelector('#menu a[href="' + hash + '"]');
+
+			if (active) { active.classList.remove('selected'); }
+			link.parentNode.classList.add('selected');
+			openPage(hash);
+		};
+		
+		selectMenuItem();
+		window.addEventListener('hashchange', selectMenuItem, false);
+
+		hideElements($('#controls')[0]);
+		$('#menu a[href="#slideshow"]').parent().hide();
+	})();
 });
