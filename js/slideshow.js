@@ -11,6 +11,21 @@ $(document).ready(function () {
 			Drawing Timer is confirmed to work with Chrome, Firefox and Opera.');
 		}
 	})();
+	/*var getLocalStorage = function (key) {
+		if (key) {
+			// TODO: get single item.
+			return;
+		}
+		
+		for (var i = 0; i < localStorage.length; i++) {
+			key = localStorage.key(i);
+			data = localStorage.getItem(key);
+			data = JSON.parse(data);
+			if (data.dataType !== 'drawingtimer-album') continue;
+			allPaths.push(data.path);
+		}
+		
+	}*/
 	/**
 	 * The setup page.
 	 */
@@ -226,13 +241,27 @@ $(document).ready(function () {
 		// Methods.
 		return {
 			show: function () {
+				var pathField = document.querySelector('#album-path')
+				, allPaths = []
+				, key
+				, data;
+				
 				slideshow.pause();
 				document.querySelector('#album-name').focus();
+				
+				// Populate list of choices for folder path selection.
+				for (var i = 0; i < localStorage.length; i++) {
+					key = localStorage.key(i);
+					data = localStorage.getItem(key);
+					data = JSON.parse(data);
+					if (data.dataType !== 'drawingtimer-album') continue;
+					allPaths.push(data.path);
+				}
+				textChoices.create(pathField, allPaths, true);
 			},
 			edit: function () {
 				var key = getCurrentAlbumKey();
 				var data = JSON.parse(localStorage.getItem(key));
-	
 				// Use data attr to store original album name, so we can delete the
 				// old album if the name changes.
 				document.querySelector('#setup form').setAttribute('data-album', key);
@@ -761,6 +790,141 @@ $(document).ready(function () {
 	}
 	var makePath = compose(addFilePrefix, addTrailingSlash);
 	
+	var textChoices = (function () {
+		var selectListener = function (e, dest) {
+			if (!e.target.getAttribute('data-key')) return;
+			dest.value = e.target.textContent;
+			closeAll();
+		};
+		var openListener = function (e, list, wrapper) {
+			var button = e.currentTarget;
+			if (button.classList.contains('open')) {
+				button.classList.remove('open');
+				list.classList.add('hide');
+			} else {
+				button.classList.add('open');
+				list.classList.remove('hide');
+			}
+
+			if (list.offsetLeft < 5) {
+				list.style.left = 5 + 'px';
+			}
+		};
+		var closeAll = function () {
+			var allContainers = document.querySelectorAll('.container-choices');
+			var allButtons = document.querySelectorAll('.btn-choices');
+			for (var i = 0; i < allContainers.length; i++) {
+				allContainers[i].classList.add('hide');
+				allButtons[i].classList.remove('open');
+			}
+		};
+		var populateChoices = function (list, arr) {
+			var item;
+			// Refresh list.
+			$(list).empty();
+			for (var i = 0; i < arr.length; i++) {
+				item = document.createElement('li');
+				item.textContent = arr[i];
+				item.setAttribute('data-key', i);
+				list.appendChild(item);
+			}
+		};
+		return {
+			create: function (target, arr, after) {
+				var wrapper
+				, button
+				, list
+				, exists = $(target).parent().is('.field-elements-wrapper');
+
+				if (!arr.length && arr.length < 1) return;
+				
+				if (!exists) {
+					// Create all elements except LI.
+					wrapper = document.createElement('div');
+					button = document.createElement('span');
+					list = document.createElement('ul');
+					
+					// Move field and new elements inside new wrapper.
+					target.parentNode.insertBefore(wrapper, target);
+					wrapper.appendChild(target);
+					
+					// CSS selectors.
+					wrapper.classList.add('field-elements-wrapper');
+					button.classList.add('btn-choices');
+					list.classList.add('container-choices', 'hide');
+					
+					button.setAttribute('title', 'Choose from existing paths');
+				
+					target.parentNode.appendChild(list);
+					
+					// if after is true, insert new node after target node.
+					if (after) {
+						wrapper.appendChild(button);
+					} else {
+						wrapper.insertBefore(button, target);
+					}
+					// Add both event listeners at the end.
+					button.addEventListener('click', function (e) { openListener(e, list, wrapper); }, false);
+					list.addEventListener('click', function (e) { selectListener(e, target); }, false);
+				} else {
+					list = $(target).parent().find('.container-choices')[0];
+				}
+				// Always update the list of options.
+				populateChoices(list, arr);
+			},
+			close: closeAll
+		}
+	})();
+	
+	var navigate = (function () {
+		var openPage = function (hash) {
+			document.body.id = document.location.hash.replace('#', 'page-');
+			modal.hide();
+			showElements(document.querySelector('#menu'), 'fast');
+
+			switch (hash) {
+				case '#slideshow':
+					slideshow.show();
+					//settings.resetForm();
+					break;
+				case '#albums':
+					albums.show();
+					//settings.resetForm();
+					break;
+				case '#setup':
+					settings.show();
+					break;
+				case '#about':
+					about.show();
+					//settings.resetForm();
+					break;
+			}
+		};
+		var selectMenuItem = function () {
+			var hash = location.hash
+			, link
+			, active = document.querySelector('#menu .selected');
+
+			// If there's no hash, go to #albums, triggering change event,
+			// which runs selectMenuItem(), now with hash.
+			if (!hash) {
+				document.location.hash = '#albums';
+				return;
+			}
+			link = document.querySelector('#menu a[href="' + hash + '"]');
+
+			if (active) { active.classList.remove('selected'); }
+			link.parentNode.classList.add('selected');
+			openPage(hash);
+		};
+		
+		selectMenuItem();
+		window.addEventListener('hashchange', selectMenuItem, false);
+
+		hideElements($('#controls')[0]);
+		$('#menu a[href="#slideshow"]').parent().hide();
+	})();
+	
 	/**
 	 * Keyboard shortcuts
 	 */
@@ -818,52 +982,9 @@ $(document).ready(function () {
 
 	}, false);
 	
-	var navigate = (function () {
-		var openPage = function (hash) {
-			document.body.id = document.location.hash.replace('#', 'page-');
-			modal.hide();
-			showElements(document.querySelector('#menu'), 'fast');
-
-			switch (hash) {
-				case '#slideshow':
-					slideshow.show();
-					//settings.resetForm();
-					break;
-				case '#albums':
-					albums.show();
-					//settings.resetForm();
-					break;
-				case '#setup':
-					settings.show();
-					break;
-				case '#about':
-					about.show();
-					//settings.resetForm();
-					break;
-			}
-		};
-		var selectMenuItem = function () {
-			var hash = location.hash
-			, link
-			, active = document.querySelector('#menu .selected');
-
-			// If there's no hash, go to #albums, triggering change event,
-			// which runs selectMenuItem(), now with hash.
-			if (!hash) {
-				document.location.hash = '#albums';
-				return;
-			}
-			link = document.querySelector('#menu a[href="' + hash + '"]');
-
-			if (active) { active.classList.remove('selected'); }
-			link.parentNode.classList.add('selected');
-			openPage(hash);
-		};
-		
-		selectMenuItem();
-		window.addEventListener('hashchange', selectMenuItem, false);
-
-		hideElements($('#controls')[0]);
-		$('#menu a[href="#slideshow"]').parent().hide();
-	})();
+	document.addEventListener('click', function (event) {
+		if (!event.target.classList.contains('btn-choices')) {
+			textChoices.close();
+		}
+	}, false);
 });
