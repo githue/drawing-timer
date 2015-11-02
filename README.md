@@ -1,4 +1,4 @@
-**Download:** **[Beta 1 (.zip)](https://github.com/githue/drawing-timer/archive/v0.9.1.zip)**
+**Download the app:** **[Beta 1 (.zip)](https://github.com/githue/drawing-timer/archive/v0.9.1.zip)**
 
 To install: unzip to any location and open app.htm in a web browser.
 
