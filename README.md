@@ -6,11 +6,11 @@ To install: unzip to any location and open app.htm in a web browser.
 
 # About Drawing Timer
 
-Practice drawing different things by giving yourself time limits. Pick your reference photos, set a time limit and complete multiple drawings quickly.
+Practice drawing different things by giving yourself time limits. Pick your reference photos, set a time limit and start practicing.
 
 ## Runs in your web browser
 
-Use Drawing Timer on your phone, tablet or desktop. It works on the latest versions of Chrome, Firefox, Safari (unconfirmed) and Opera. No installation required, just unzip it and open the `.htm` file.
+Use Drawing Timer on your phone, tablet or desktop. It works on the latest versions of Chrome, Firefox, Safari (unconfirmed) and Opera. There's nothing to install, just unpack the ZIP or TAR.GZ and open `app.htm`.
 
 ## Use your own image library
 
