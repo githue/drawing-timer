@@ -1,3 +1,9 @@
+**Download:** **[Beta 1 (.zip)](https://github.com/githue/drawing-timer/archive/v0.9.1.zip)**
+
+To install: unzip to any location and open app.htm in a web browser.
+
+([All downloads](https://github.com/githue/drawing-timer/releases))
+
 # About Drawing Timer
 
 Practice drawing different things by giving yourself time limits. Pick your reference photos, set a time limit and complete multiple drawings quickly.
