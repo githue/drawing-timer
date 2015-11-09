@@ -11,21 +11,6 @@ $(document).ready(function () {
 			Drawing Timer is confirmed to work with Chrome, Firefox and Opera.');
 		}
 	})();
-	/*var getLocalStorage = function (key) {
-		if (key) {
-			// TODO: get single item.
-			return;
-		}
-		
-		for (var i = 0; i < localStorage.length; i++) {
-			key = localStorage.key(i);
-			data = localStorage.getItem(key);
-			data = JSON.parse(data);
-			if (data.dataType !== 'drawingtimer-album') continue;
-			allPaths.push(data.path);
-		}
-		
-	}*/
 	/**
 	 * The setup page.
 	 */
@@ -67,7 +52,7 @@ $(document).ready(function () {
 			preview.classList.remove('hidden');
 			document.querySelector('#field-cover').classList.remove('hidden');
 
-			preview.querySelector('img').setAttribute('src', path + cover);
+			preview.querySelector('img').src = path + cover;
 		};
 		var handleSave = function (e) {
 			var cover = document.querySelector('#album-cover-data').value.split()
@@ -328,10 +313,10 @@ $(document).ready(function () {
 					path = makePath(data.path);
 					
 					if (data.cover) {
-						album.querySelector('img').setAttribute('src', path + data.cover);
+						album.querySelector('img').src = path + data.cover;
 					}
 					else {
-						album.querySelector('img').setAttribute('src', path + data.images[0]);
+						album.querySelector('img').src = path + data.images[0];
 					}
 					
 					album.querySelector('.label').textContent = key;
@@ -532,8 +517,8 @@ $(document).ready(function () {
 	
 				// Reveal the new image when it's ready
 				setTimeout(function () {
-					// Don't resume timer if there's no source image.
-					if (img.getAttribute('src')) {
+					// Continue as long as source is available.
+					if (img.src) {
 						slideshow.addTimer();
 						slideshow.resume();
 					}
@@ -566,7 +551,7 @@ $(document).ready(function () {
 			changeImageTo: function (name) {
 				var file = this.path + name;
 				if (name) {
-					img.setAttribute('src', file);
+					img.src = file;
 				} else {
 					endOfPlaylist();
 				}
