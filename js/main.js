@@ -2,6 +2,7 @@
 /* global $ */
 var reader;
 var touchContainer;
+var touch = {};
 
 var playlist = {
 	create: function (files) {
@@ -54,6 +55,7 @@ var findNextImage = function () {
 	}
 };
 var change = function (img) {
+	var delay = getDelay();
 	// begin fading out.
 	hideElements($('#slideshow')[0], 'fast');
 	
@@ -62,7 +64,7 @@ var change = function (img) {
 		$('#time-limit').countdown('destroy');
 		countdownRestart();
 		reader.readAsDataURL(img);
-		showElements($('#slideshow')[0], 'fast');
+		showElements($('#slideshow')[0], 'fast', delay - 500); // compensate.
 	}, 500);
 };
 var handleFiles = function (e) {
@@ -116,8 +118,11 @@ var countdownRestart = function () {
 var getSpeed = function () {
 	return $('#speed option:selected').val();
 };
+var getDelay = function () {
+	return $('input[name="delay"]:checked').val();
+};
 var initializeSlideshow = function (e) {
-	var img = document.querySelector('#slideshow img') || new Image();
+	var img = document.querySelector('#image-container img') || new Image();
 	
 	reader = new FileReader();
 	reader.onload = (function (aImg) {
@@ -126,7 +131,7 @@ var initializeSlideshow = function (e) {
 		};
 	})(img);
 	
-	document.querySelector('#slideshow').appendChild(img);
+	document.querySelector('#image-container').appendChild(img);
 	
 	document.querySelector('#previous').removeAttribute('hidden');
 	document.querySelector('#pause').removeAttribute('hidden');
@@ -134,13 +139,15 @@ var initializeSlideshow = function (e) {
 	
 	document.body.classList.add('slideshow-started');
 	
+	configPanel().hide;
+	
 	findNextImage();
 }
 /**
-	* Hide transition.
-	* @param {object} element - The node to apply the transition to.
-	* @param {string} speed - Keyword describing the transition speed.
-	*/
+* Hide transition.
+* @param {object} element - The node to apply the transition to.
+* @param {string} speed - Keyword describing the transition speed.
+*/
 var hideElements = function (elements, speed) {
 	if (!elements.length) elements = [elements];
 	if (!speed) speed = 'none';
@@ -156,15 +163,17 @@ var hideElements = function (elements, speed) {
 * @param {object} element - The node to apply the transition to.
 * @param {string} speed - Keyword describing the transition speed.
 */
-var showElements = function (elements, speed) {
+var showElements = function (elements, speed, delay) {
 	if (!elements.length) elements = [elements];
 	if (!speed) speed = 'none';
-	for (var i = 0; i < elements.length; i++) {
-		elements[i].classList.remove('hide', 'transition-fast', 'transition-slow', 'transition-none');
-		elements[i].classList.add('show', 'transition-' + speed);
-	}
+	setTimeout(function () {
+		for (var i = 0; i < elements.length; i++) {
+			elements[i].classList.remove('hide', 'transition-fast', 'transition-slow', 'transition-none');
+			elements[i].classList.add('show', 'transition-' + speed);
+		}
+	}, delay || 0);
 };
-function shuffle(array) {
+function shuffle (array) {
 	var currentIndex = array.length, temporaryValue, randomIndex ;
 	while (0 !== currentIndex) {
 		randomIndex = Math.floor(Math.random() * currentIndex);
@@ -218,10 +227,74 @@ var shrink = function (target) {
 		touchContainer.get('swipe').set({ enable: false });
 	}
 };
+var configPanel = function (e) {
+	var panel = document.querySelector('#config .panel'),
+	isRetracted = panel.classList.contains('retract');
+	
+	var show = function () {
+		panel.classList.add('retract');
+		panel.style.marginTop = -panel.offsetHeight + 'px';
+		slideshowResume();
+	};
+	
+	var hide = function () {
+		panel.classList.remove('retract');
+		panel.style.marginTop = '';
+		slideshowPause();
+	};
+	
+	// Default toggle behavior.
+	if (isRetracted) {
+		hide();
+	} else {
+		show();
+	}
+	return {
+		show: this.show,
+		hide: this.hide
+	}
+};
+var hideElementsTimeout;
+var cancelHideListener = function () {
+	clearTimeout(hideElementsTimeout);
+	hideElementsTimeout = null;
+};
+var movementListener = function (e) {
+	if (touch.touched) return;
+	cancelHideListener();
+	showElements([$('#controls')[0], $('#config .handle')[0]], 'fast');
+	hideElementsTimeout = setTimeout(mouseStopped, 1000);
+};
+var mouseStopped = function () {
+	cancelHideListener();
+	hideElements([$('#controls')[0], $('#config .handle')[0]], 'fast');
+};
+var touchListener = function (e) {
+	var elements = document.querySelectorAll('#controls, #config .handle');
+	// Create touched property to intercept mousemove event.
+	touch.touched = true;
+
+	if (elements[0].classList.contains('show')) {
+		hideElements(elements, 'fast');
+	}
+	else {
+		showElements(elements, 'fast');
+	}
+};
 window.onload = function () {
-	touchContainer = new Hammer(document.querySelector('#slideshow'));
-	touchContainer.on('swipeleft', slideshowNext);
-	touchContainer.on('swiperight', slideshowBack);
+	touchContainer = new Hammer(document.querySelector('#image-container'));
+	touchContainer.on('swipeleft', function () {
+		slideshowNext();
+		hideElements([$('#controls')[0], $('#config .handle')[0]], 'fast');
+	});
+	touchContainer.on('swiperight', function () {
+		slideshowBack()
+		hideElements([$('#controls')[0], $('#config .handle')[0]], 'fast');
+	});
+	
+	$('#image-container').mousemove(movementListener);
+	$('#controls, #config').mouseenter(cancelHideListener);
+	$('#image-container')[0].addEventListener('touchend', touchListener, false);
 
 	$('#input-files').change(handleFiles);
 	$('#speed').change(countdownRestart);
@@ -229,6 +302,8 @@ window.onload = function () {
 	$('#next').click(slideshowNext);
 	$('#previous').click(slideshowBack);
 	$('#pause').click(slideshowPauseToggle);
+	
+	$('#config .handle').click(configPanel);
 	
 	toSwitch($('#desaturate')[0], grayscale);
 	toSwitch($('#shrink')[0], shrink);

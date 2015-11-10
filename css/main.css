@@ -5,18 +5,115 @@ body {
 	margin: 0;
 	padding: 1px 15px;
 	color: hsl(0,0%,0%);
-	background: hsl(0, 0%, 85%);
+	background: black;
 	transition: background .3s;
+}
+button, input, select, option {
+	font-family: arial;
+	font-size: 16px;
+}
+button,
+submit,
+input[type="buton"],
+input[type="submit"],
+input[type="reset"] {
+	padding: 5px 10px;
+	line-height: 1;
+}
+button svg {
+	display: block;
+	margin: 0 auto;
+}
+button svg use {
+	fill: hsla(0,0%,0%,.7);
+}
+#config {
+	box-sizing: border-box;
+	margin: -1px auto 0 auto;
+	z-index: 3;
+	width: 450px;
+	position: relative;
+}
+#config .panel {
+	padding: 15px 15px 15px 15px;
+	background: hsla(0,0%,90%,1);
+	border-radius: 0 0 10px 10px;
+	opacity: 1;
+	margin-top: 0;
+	transition: width .2s, margin .4s, opacity .6s;
+	transition-timing-function: ease;
+}
+#config .panel.retract {
+	opacity: 0;
+}
+.handle {
+	width: 2em;
+	height: 2em;
+	position: fixed;
+	top: 0; right: 0; left: 0;
+	list-style: none;
+	margin: auto;
+	padding: 0 20px;
+	color: white;
+	background: hsla(0,0%,0%,.9);
+	text-align: center;
+	cursor: pointer;
+	border-radius: 0 0 50% 50%;
+	box-shadow: none;
+}
+#config .panel.retract + .handle {
+	color: black;
+	background: hsla(0,0%,100%,1);
+	box-shadow: 0px 1px 3px 0 hsla(0, 0%, 0%, .5);
+}
+#controls {
+	text-align: center;
+	padding: 15px;
+	position: fixed;
+	right: 0; bottom: 0; left: 0;
+	border-top: 1px solid hsla(0,0%,100%,.4);
+	background: hsla(0,0%,0%,.5);
+	z-index: 2;
+}
+#controls button {
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+#controls button:focus {
+	outline: none;
+}
+#controls button svg use {
+	fill: hsla(0,0%,100%,.9);
+}
+@media (max-width: 500px) {
+	#config {
+		width: 100vw;
+	}
 }
 #slideshow {
 	visibility: hidden;
-	position: relative;
+	text-align: center;
+	color: white;
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 0;
+	z-index: 1;
+	overflow: hidden;
 }
-#slideshow img {
+#image-container {
+	height: 100%;
+	overflow: auto;
+}
+#image-container img {
 	vertical-align: top;
 	/* prevent image dragging on swipe */
 	pointer-events: none;
 	transition: -webkit-filter .3s, filter .3s;
+	z-index: 1;
+}
+body.shrink #image-container img {
+	max-width: 100vw;
+	max-height: 100vh;
 }
 body.slideshow-started #slideshow {
 	visibility: visible;
@@ -28,20 +125,13 @@ body.slideshow-started #slideshow {
 	padding: 3px 10px;
 	color: white;
 	background: hsla(0,0%,0%,.5);
-	z-index: 1;
+	z-index: 2;
 }
 body.countdown-paused #time-limit:after {
 	content: 'Paused';
 	font-size: 12px;
 	display: block;
 	text-align: center;
-}
-button svg {
-	display: block;
-	margin: 0 auto;
-}
-button svg use {
-	fill: hsla(0,0%,0%,.7);
 }
 body.desaturate #slideshow img {
 	-webkit-filter: grayscale(100%);
