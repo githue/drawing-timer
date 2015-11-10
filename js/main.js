@@ -18,12 +18,15 @@ var playlist = {
 		}
 		files = null;
 		shuffle(this.array);
-		slideshowReady();
 	},
 	next: function () {
 		var img = this.array[playlist.pos];
 		if (playlist.pos >= this.array.length) {
 			// The end.
+			$('#time-limit').countdown('destroy');
+			hideElements($('#slideshow')[0], 'fast');
+			document.body.classList.remove('slideshow-started');
+			configPanel().show;
 			return;
 		}
 		// Change to a new image.
@@ -61,22 +64,18 @@ var change = function (img) {
 	
 	// Show next image after 500ms.
 	setTimeout(function () {
+		$('#slideshow').show();
 		$('#time-limit').countdown('destroy');
 		countdownRestart();
 		reader.readAsDataURL(img);
-		showElements($('#slideshow')[0], 'fast', delay - 500); // compensate.
-	}, 500);
+		showElements($('#slideshow')[0], 'fast');
+	}, +delay + 500);
 };
 var handleFiles = function (e) {
 	var files = e.target.files;
-	if (files.length < 1) return;
 	
 	playlist.create(files);
-};
-// Show the start button.
-var slideshowReady = function (e) {
-	document.querySelector('#status').classList.add('hidden');
-	document.querySelector('#start').removeAttribute('hidden');
+	initializeSlideshow();
 };
 var slideshowNext = function (e) {
 	findNextImage();
@@ -139,7 +138,10 @@ var initializeSlideshow = function (e) {
 	
 	document.body.classList.add('slideshow-started');
 	
-	configPanel().hide;
+	// Allow a delay so the user sees where the panel goes.
+	setTimeout(function () {
+		configPanel().hide;
+	}, 600);
 	
 	findNextImage();
 }
@@ -298,7 +300,6 @@ window.onload = function () {
 
 	$('#input-files').change(handleFiles);
 	$('#speed').change(countdownRestart);
-	$('#start').click(initializeSlideshow);
 	$('#next').click(slideshowNext);
 	$('#previous').click(slideshowBack);
 	$('#pause').click(slideshowPauseToggle);

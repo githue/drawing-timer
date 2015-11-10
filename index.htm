@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Drawing Timer Single Use</title>
+<title>Draw Timer</title>
 <script src="js/jquery-2.1.4.min.js"></script>
 <script src="js/jquery.plugin.min.js"></script>
 <script src="js/jquery.countdown.min.js"></script>
@@ -22,10 +22,7 @@
 
 <section id="config">
 	<div class="panel">
-		<h1>DrawTimer.com</h1>
-		<p>Select reference images</p>
-		<p><input type="file" id="input-files" multiple /></p>
-		<p id="status">No files selected.</p>
+		<h1>DrawTimer</h1>
 		
 		<p>Speed:
 			<select id="speed">
@@ -47,11 +44,13 @@
 			<label><input type="radio" name="delay" id="delay-1s" value="1000" checked /> 1 second</label>
 			<label><input type="radio" name="delay" id="delay-2s" value="2000" /> 2 seconds</label>
 		</p>
-		<ul>
+		<ul class="toggles">
 			<li><labeL><input type="checkbox" id="shrink" checked> Shrink to fit</label></li>
 			<li><label><input type="checkbox" id="desaturate"> Black & white</label></li>
 		</ul>
-		<p><button id="start" hidden>Start</button></p>
+		<h2>Your reference images</h2>
+		<p><input type="file" id="input-files" multiple /></p>
+		<p>Supports 1,000+ photos</p>
 	</div>
 	
 	<div class="handle hide">#</div>
