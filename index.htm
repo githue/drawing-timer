@@ -11,17 +11,60 @@
 <script src="js/main.js"></script>
 <link rel="stylesheet" href="css/main.css" />
 </head>
-
 <body>
-<p><label><input type="checkbox" id="randomize" checked /> Randomize</label></p>
+<h1>DrawTimer.com</h1>
+<svg style="display: none">
+	<def>
+		<rect id="svg-vb" x="3" width="3" height="16" />
+		<polygon id="svg-arr" points="0,0 16,8 0,16" />
+		<polygon id="svg-arr-thin" points="2,0 14,8 2,16  2,14 10,8 2,2" />
+	</def>
+</svg>
+
+<p><select id="speed">
+	<option value="3">3 seconds</option>
+	<option value="30" selected>30 seconds</option>
+	<option value="60">1 minute</option>
+	<option value="120">2 minutes</option>
+	<option value="180">3 minutes</option>
+	<option value="240">4 minutes</option>
+	<option value="300">5 minutes</option>
+	<option value="600">10 minutes</option>
+	<option value="1200">20 minutes</option>
+	<option value="2400">40 minutes</option>
+	<option value="3600">1 hour</option>
+</select></p>
+<ul>
+	<li><label><input type="checkbox" id="random" checked /> shuffle images</label></li>
+	<li><labeL><input type="checkbox" id="shrink" checked> Shrink to fit</label></li>
+	<li><label><input type="checkbox" id="desaturate"> Black & white</label></li>
+</ul>
 <p>Select reference images</p>
 <p><input type="file" id="input-files" multiple /></p>
 <p id="status">No files selected.</p>
 <p><button id="start" hidden>Start</button></p>
-<p><button id="previous" hidden>previous</button></p>
-<p><button id="pause" hidden>Pause</button></p>
-<p><button id="next" hidden>Next</button></p>
-<div id="slideshow"></div>
+
+<button id="previous" title="back">
+	<svg width="16" height="16">
+		<use xlink:href="#svg-arr-thin" transform="translate(16,16) rotate(180)" />
+	</svg>
+</button>
+<button id="pause" title="pause/resume">
+	<svg width="16" height="16">
+		<g id="icon-pause">
+			<use xlink:href="#svg-vb" x="0" />
+			<use xlink:href="#svg-vb" x="6" />
+		</g>
+		<use id="icon-play" xlink:href="#svg-arr" />
+	</svg>
+</button>
+<button id="next" title="next">
+	<svg width="16" height="16">
+		<use xlink:href="#svg-arr-thin" />
+	</svg>
+</button>
+
+<div id="slideshow"><div id="time-limit"></div></div>
 </body>
 
 </html>

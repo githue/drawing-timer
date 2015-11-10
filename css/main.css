@@ -1,0 +1,74 @@
+html, body { height: 100%; }
+body {
+	box-sizing: border-box;
+	font: 16px/1.6 sans-serif;
+	margin: 0;
+	padding: 1px 15px;
+	color: hsl(0,0%,0%);
+	background: hsl(0, 0%, 85%);
+	transition: background .3s;
+}
+#slideshow {
+	visibility: hidden;
+	position: relative;
+}
+#slideshow img {
+	vertical-align: top;
+	/* prevent image dragging on swipe */
+	pointer-events: none;
+	transition: -webkit-filter .3s, filter .3s;
+}
+body.slideshow-started #slideshow {
+	visibility: visible;
+}
+#time-limit {
+	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 3px 10px;
+	color: white;
+	background: hsla(0,0%,0%,.5);
+	z-index: 1;
+}
+body.countdown-paused #time-limit:after {
+	content: 'Paused';
+	font-size: 12px;
+	display: block;
+	text-align: center;
+}
+button svg {
+	display: block;
+	margin: 0 auto;
+}
+button svg use {
+	fill: hsla(0,0%,0%,.7);
+}
+body.desaturate #slideshow img {
+	-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
+}
+/* decide which SVG icon to show on pause button */
+body:not(.countdown-paused) #icon-play {
+	display: none;
+}
+body.countdown-paused #icon-pause {
+	display: none;
+}
+/* general-purpose transitions */
+.show {
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+.hide {
+	visibility: hidden !important;
+	opacity: 0 !important;
+}
+.transition-fast {
+	transition: opacity .5s, visibility .5s;
+}
+.transition-slow {
+	transition: opacity 3s, visibility 3s;
+}
+.hidden {
+	display: none !important;
+}
