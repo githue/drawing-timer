@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Draw Timer</title>
+<link rel="stylesheet" href="css/main.css" />
 <script src="js/jquery-2.1.4.min.js"></script>
 <script src="js/jquery.plugin.min.js"></script>
 <script src="js/jquery.countdown.min.js"></script>
 <script src="js/hammer.min.js"></script>
 <script src="js/main.js"></script>
-<link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
 <svg style="display: none">
@@ -17,6 +17,7 @@
 		<rect id="svg-vb" x="6" width="6" height="32" />
 		<polygon id="svg-arr" points="0,0 32,16 0,32" />
 		<polygon id="svg-arr-thin" points="4,0 28,16 4,32  4,28 20,16 4,4" />
+		<rect id="svg-hb" width="24" height="4" />
 	</def>
 </svg>
 
@@ -48,12 +49,19 @@
 			<li><labeL><input type="checkbox" id="shrink" checked> Shrink to fit</label></li>
 			<li><label><input type="checkbox" id="desaturate"> Black & white</label></li>
 		</ul>
-		<h2>Your reference images</h2>
+		<h2>Reference images</h2>
 		<p><input type="file" id="input-files" multiple /></p>
-		<p>Supports 1,000+ photos</p>
 	</div>
 	
-	<div class="handle hide">#</div>
+	<div class="handle hide">
+		<svg id="svg-handle" width="24" height="24">
+			<g>
+				<use xlink:href="#svg-hb" y="0" />
+				<use xlink:href="#svg-hb" y="8" />
+				<use xlink:href="#svg-hb" y="16" />
+			</g>
+		</svg>
+	</div>
 </section>
 
 <section id="slideshow">

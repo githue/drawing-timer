@@ -6,6 +6,7 @@ var touch = {};
 
 var playlist = {
 	create: function (files) {
+		var imgType = /^image\//;
 		// start at -1 because it will increment to 0 to get first image.
 		this.pos = -1;
 		this.array = [];
@@ -13,7 +14,8 @@ var playlist = {
 		playHistory.pos = 0;
 		// Transfer FileList to our own array for sorting.
 		for (var i = 0; i < files.length; i++) {
-			// Add a File blob to the playlist.
+			// Add a File blob to the playlist, excluding non-images.
+			if (!imgType.test(files[i].type)) continue;
 			this.array.push(files[i]);
 		}
 		files = null;
@@ -58,23 +60,26 @@ var findNextImage = function () {
 	}
 };
 var change = function (img) {
-	var delay = getDelay();
-	// begin fading out.
-	hideElements($('#slideshow')[0], 'fast');
+	var delay = getDelay()
+	, slideshow = $('#slideshow')[0];
 	
-	// Show next image after 500ms.
+	// begin fading out.
+	hideElements(slideshow, 'fast'); // 500 ms
+	
+	// Change to next image after 500ms.
 	setTimeout(function () {
-		$('#slideshow').show();
-		$('#time-limit').countdown('destroy');
-		countdownRestart();
+		// Only when image is loaded will it fade in.
 		reader.readAsDataURL(img);
-		showElements($('#slideshow')[0], 'fast');
-	}, +delay + 500);
+		$('#time-limit').countdown('destroy');
+	}, 500);
+	
+	// Restart the countdown timer and show image.
+	setTimeout(function () {
+		countdownRestart();
+	}, delay + 500);
 };
 var handleFiles = function (e) {
-	var files = e.target.files;
-	
-	playlist.create(files);
+	playlist.create(e.target.files);
 	initializeSlideshow();
 };
 var slideshowNext = function (e) {
@@ -118,15 +123,17 @@ var getSpeed = function () {
 	return $('#speed option:selected').val();
 };
 var getDelay = function () {
-	return $('input[name="delay"]:checked').val();
+	return +$('input[name="delay"]:checked').val();
 };
 var initializeSlideshow = function (e) {
 	var img = document.querySelector('#image-container img') || new Image();
+	var $shim = $('#config .shim')[0] || $('<div class="shim" />');
 	
 	reader = new FileReader();
 	reader.onload = (function (aImg) {
 		return function (e) {
 			aImg.src = e.target.result;
+			showElements($('#slideshow')[0], 'fast', getDelay());
 		};
 	})(img);
 	
@@ -138,10 +145,12 @@ var initializeSlideshow = function (e) {
 	
 	document.body.classList.add('slideshow-started');
 	
-	// Allow a delay so the user sees where the panel goes.
+	// Allow an arbitrary delay so the user sees where the panel goes.
+	$('#config .panel').append($shim);
 	setTimeout(function () {
+		$('#config .shim').remove();
 		configPanel().hide;
-	}, 600);
+	}, 800);
 	
 	findNextImage();
 }
@@ -232,7 +241,7 @@ var shrink = function (target) {
 var configPanel = function (e) {
 	var panel = document.querySelector('#config .panel'),
 	isRetracted = panel.classList.contains('retract');
-	
+
 	var show = function () {
 		panel.classList.add('retract');
 		panel.style.marginTop = -panel.offsetHeight + 'px';
@@ -299,7 +308,7 @@ window.onload = function () {
 	$('#image-container')[0].addEventListener('touchend', touchListener, false);
 
 	$('#input-files').change(handleFiles);
-	$('#speed').change(countdownRestart);
+	//$('#speed').change(countdownRestart);
 	$('#next').click(slideshowNext);
 	$('#previous').click(slideshowBack);
 	$('#pause').click(slideshowPauseToggle);

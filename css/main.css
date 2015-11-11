@@ -1,12 +1,9 @@
 html, body { height: 100%; }
 body {
-	box-sizing: border-box;
-	font: 16px/1.6 sans-serif;
+	font: 16px/1.6 arial, sans-serif;
 	margin: 0;
 	padding: 0 15px;
-	color: hsl(0,0%,0%);
 	background: black;
-	transition: background .3s;
 }
 button, input, select, option {
 	font-family: arial;
@@ -19,6 +16,9 @@ input[type="submit"],
 input[type="reset"] {
 	padding: 5px 10px;
 	line-height: 1;
+}
+select {
+	padding: 5px 0;
 }
 button svg {
 	display: block;
@@ -43,8 +43,7 @@ h2 {
 	font-weight: normal;
 }
 #config {
-	box-sizing: border-box;
-	margin: -1px auto 0 auto;
+	margin: 0 auto;
 	z-index: 3;
 	width: 400px;
 	position: relative;
@@ -77,6 +76,12 @@ h2 {
 	text-align: center;
 	cursor: pointer;
 	border-radius: 0 0 50% 50%;
+}
+#svg-handle {
+	margin-top: 4px;
+}
+#svg-handle use {
+	fill: hsl(210,20%,20%);
 }
 #config .panel:not(.retract) + .handle,
 body:not(.slideshow-started) #config .handle {
@@ -128,6 +133,8 @@ body:not(.slideshow-started) #config .handle {
 	vertical-align: top;
 	/* prevent image dragging on swipe */
 	pointer-events: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
 	transition: -webkit-filter .3s, filter .3s;
 	z-index: 1;
 }
@@ -210,6 +217,11 @@ label.switch.checked .widget {
 label.switch.checked .widget:after {
 	margin-left: 1em;
 	background-color: hsl(207, 70%, 50%);
+}
+.shim {
+	position: absolute;
+	top: 0; right: 0; bottom: 0; left: 0;
+	background-color: hsla(0,0%,0%,.2);
 }
 /* Hammer.js: when viewing full size image, don't enable swipe gesture. */
 body:not(.shrink) #image-container {
