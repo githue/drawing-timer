@@ -23,34 +23,46 @@
 
 <section id="config">
 	<div class="panel">
-		<h1>DrawTimer</h1>
-		
-		<p>Speed:
-			<select id="speed">
-				<option value="3">3 seconds</option>
-				<option value="30" selected>30 seconds</option>
-				<option value="60">1 minute</option>
-				<option value="120">2 minutes</option>
-				<option value="180">3 minutes</option>
-				<option value="240">4 minutes</option>
-				<option value="300">5 minutes</option>
-				<option value="600">10 minutes</option>
-				<option value="1200">20 minutes</option>
-				<option value="2400">40 minutes</option>
-				<option value="3600">1 hour</option>
-			</select>
-		</p>
-		<p>Delay:
-			<label><input type="radio" name="delay" id="delay-0s" value="0" /> none</label>
-			<label><input type="radio" name="delay" id="delay-1s" value="1000" checked /> 1 second</label>
-			<label><input type="radio" name="delay" id="delay-2s" value="2000" /> 2 seconds</label>
-		</p>
-		<ul class="toggles">
-			<li><labeL><input type="checkbox" id="shrink" checked> Shrink to fit</label></li>
-			<li><label><input type="checkbox" id="desaturate"> Black & white</label></li>
-		</ul>
-		<h2>Reference images</h2>
-		<p><input type="file" id="input-files" multiple /></p>
+		<h1><a href="#settings">DrawTimer</a></h1>
+		<a id="link-about" href="#about">about</a>
+		<section id="about">
+			<p>Practice gesture drawing and quick sketching using your favorite reference photos.</p>
+			<p>Your images cannot be seen by anybody else and do not get saved.</p>
+			<h2>Attributions</h2>
+			<ul>
+				<li><a href="http://keith-wood.name/countdown.html">jQuery Countdown</a></li>
+				<li><a href="http://hammerjs.github.io/">Hammer.js</a></li>
+			</ul>
+		</section>
+		<section id="settings" class="default">
+			<p>Speed:
+				<select id="speed">
+					<option value="3">3 seconds</option>
+					<option value="30" selected>30 seconds</option>
+					<option value="60">1 minute</option>
+					<option value="120">2 minutes</option>
+					<option value="180">3 minutes</option>
+					<option value="240">4 minutes</option>
+					<option value="300">5 minutes</option>
+					<option value="600">10 minutes</option>
+					<option value="1200">20 minutes</option>
+					<option value="2400">40 minutes</option>
+					<option value="3600">1 hour</option>
+				</select>
+			</p>
+			<p>Delay:
+				<label><input type="radio" name="delay" id="delay-0s" value="0" /> none</label>
+				<label><input type="radio" name="delay" id="delay-1s" value="1000" checked /> 1 second</label>
+				<label><input type="radio" name="delay" id="delay-2s" value="2000" /> 2 seconds</label>
+			</p>
+			<ul class="toggles">
+				<li><label><input type="checkbox" id="shrink" checked> Shrink to fit</label></li>
+				<li><label><input type="checkbox" id="desaturate"> Black & white</label></li>
+			</ul>
+			<h2>Reference images</h2>
+			<p><input type="file" id="input-files" multiple /></p>
+			<p><button id="restart">Start again</button></p>
+		</section>
 	</div>
 	
 	<div class="handle hide">

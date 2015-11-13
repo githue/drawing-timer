@@ -18,7 +18,7 @@ input[type="reset"] {
 	line-height: 1;
 }
 select {
-	padding: 5px 0;
+	padding: 5px 5px 5px 0;
 }
 button svg {
 	display: block;
@@ -37,6 +37,10 @@ h1 {
 	background: hsl(210,20%,20%);
 	color: white;
 	text-shadow: 1px 1px 1px hsla(0,0%,0%,.5);
+}
+h1 a {
+	color: inherit;
+	text-decoration: inherit;
 }
 h2 {
 	font-size: 120%;
@@ -115,6 +119,25 @@ body:not(.slideshow-started) #config .handle {
 	body {
 		padding: 0;
 	}
+}
+#link-about {
+	display: block;
+	position: absolute;
+	top: 16px;
+	right: 15px;
+	color: hsla(0,0%,100%,.5);
+	text-decoration: none;
+	font-size: 12px;
+}
+/* Switch between #about and #settings */
+#config section:not(.default) {
+	display: none;
+}
+#config section:target + section {
+	display: none;
+}
+#config section:target {
+	display: block;
 }
 #slideshow {
 	visibility: hidden;
