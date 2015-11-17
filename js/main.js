@@ -1,9 +1,6 @@
-/* global Hammer */
-/* global $ */
 (function () {
-	var reader;
+	var reader = new FileReader();
 	var touch = {};
-	
 	var playlist = {
 		create: function (files) {
 			var imgType = /^image\//;
@@ -33,7 +30,7 @@
 				return;
 			}
 			// Change to a new image.
-			change(img);
+			change(img, 500, getDelay());
 			
 			// Update the playlist history.
 			playHistory.array.push(img);
@@ -43,11 +40,11 @@
 	var playHistory = {
 		back: function () {
 			if (this.pos < 1) return;
-			change(this.array[--this.pos]);
+			change(this.array[--this.pos], 500, 0);
 		},
 		forward: function () {
 			if (this.pos >= this.array.length - 1) return;
-			change(this.array[++this.pos]);
+			change(this.array[++this.pos], 500, 0);
 		}
 	};
 	var findNextImage = function () {
@@ -60,29 +57,49 @@
 			playlist.next(playlist.pos++);
 		}
 	};
-	var change = function (img) {
-		var delay = getDelay()
-		, slideshow = $('#slideshow')[0];
+	var initializeSlideshow = function (e) {
+		var $shim = $('#config .shim')[0] || $('<div class="shim" />');
+
+		document.querySelector('#previous').removeAttribute('hidden');
+		document.querySelector('#pause').removeAttribute('hidden');
+		document.querySelector('#next').removeAttribute('hidden');
 		
-		// begin fading out.
-		hideElements(slideshow, 'fast'); // 500 ms
+		document.body.classList.add('slideshow-started');
 		
-		// Change to next image after 500ms.
+		// Hide the panel after a delay, to ensure they see where it goes.
+		$('#config .panel').append($shim);
 		setTimeout(function () {
-			// Only when image is loaded will it fade in.
-			reader.readAsDataURL(img);
-			$('#time-limit').countdown('destroy');
-		}, 500);
+			$('#config .shim').remove();
+			configPanel().hide;
+		}, 800);
 		
-		// Restart the countdown timer and show image.
-		setTimeout(function () {
-			countdownRestart();
-		}, delay + 500);
+		findNextImage();
 	};
 	var handleFiles = function (e) {
 		var files = document.querySelector('#input-files').files;
 		playlist.create(files);
 		initializeSlideshow();
+	};
+	var change = function (img, speed, delay) {
+		var $slideshow = $('#slideshow #image-container');
+		
+		// Handle load event.
+		reader.onload = function (e) {
+			$('#image-container img')[0].src = e.target.result;
+			showElements($slideshow[0], 'fast', delay);
+		}
+		
+		// begin fade out.
+		hideElements($slideshow[0], 'fast'); // 500 ms
+		$('#time-limit').countdown('destroy');
+		
+		// Change to next image after fade.
+		setTimeout(function () {
+			reader.readAsDataURL(img);
+		}, speed);
+		
+		// Restart the countdown timer
+		setTimeout(countdownRestart, delay + speed);
 	};
 	var slideshowNext = function (e) {
 		findNextImage();
@@ -114,7 +131,7 @@
 				findNextImage();
 			}
 		});
-	}
+	};
 	var countdownRestart = function () {
 		if (!document.body.classList.contains('slideshow-started')) return;
 		$('#time-limit').countdown('destroy');
@@ -122,40 +139,11 @@
 		slideshowResume();
 	};
 	var getSpeed = function () {
-		return $('#speed option:selected').val();
+		return +$('#speed option:selected').val();
 	};
 	var getDelay = function () {
 		return +$('input[name="delay"]:checked').val();
 	};
-	var initializeSlideshow = function (e) {
-		var img = document.querySelector('#image-container img') || new Image();
-		var $shim = $('#config .shim')[0] || $('<div class="shim" />');
-		
-		reader = new FileReader();
-		reader.onload = (function (aImg) {
-			return function (e) {
-				aImg.src = e.target.result;
-				showElements($('#slideshow')[0], 'fast', getDelay());
-			};
-		})(img);
-		
-		document.querySelector('#image-container').appendChild(img);
-		
-		document.querySelector('#previous').removeAttribute('hidden');
-		document.querySelector('#pause').removeAttribute('hidden');
-		document.querySelector('#next').removeAttribute('hidden');
-		
-		document.body.classList.add('slideshow-started');
-		
-		// Allow an arbitrary delay so the user sees where the panel goes.
-		$('#config .panel').append($shim);
-		setTimeout(function () {
-			$('#config .shim').remove();
-			configPanel().hide;
-		}, 800);
-		
-		findNextImage();
-	}
 	/**
 	* Hide transition.
 	* @param {object} element - The node to apply the transition to.
@@ -233,14 +221,11 @@
 	var shrink = function (target) {
 		if (target.checked) {
 			document.body.classList.add('shrink');
-			touchContainer.get('swipe').set({ enable: true });
 		} else {
 			document.body.classList.remove('shrink');
-			// Allow mobile devices to pan around full-size image.
-			touchContainer.get('swipe').set({ enable: false });
 		}
 	};
-	var configPanel = function (e) {
+	var configPanel = function () {
 		var panel = document.querySelector('#config .panel'),
 		isRetracted = panel.classList.contains('retract');
 	
@@ -273,6 +258,8 @@
 		hideElementsTimeout = null;
 	};
 	var movementListener = function (e) {
+		// Don't continue if touch event is detected. Users are unlikely to
+		// change from touch screen to mouse.
 		if (touch.touched) return;
 		cancelHideListener();
 		showElements([$('#controls')[0], $('#config .handle')[0]], 'fast');
@@ -294,23 +281,42 @@
 			showElements(elements, 'fast');
 		}
 	};
+	var toggleSwipe = function (e, obj) {
+		// Disable swipe when shrink to fit is disabled.
+		if (e.target.checked) {
+			obj.get('swipe').set({ enable: true });
+		} else {
+			obj.get('swipe').set({ enable: false });
+		}
+	};
+	var shortcutsListener = function (e) {
+		var k = e.keyCode;
+		
+		//console.log(k);
+		
+		if (k === 69) { $('#desaturate').click(); } // [e]
+		if (k === 81) { $('#shrink').click(); } // [q]
+		if (k === 83) { $('#pause').click(); } // [s]
+		if (k === 68) { $('#next').click(); } // [d]
+		if (k === 65) { $('#previous').click(); } // [a]
+		if (k === 90) { $('#speed').focus(); } // [z]
+		if (k === 87) { configPanel(); } // [w]
+	};
 	window.onload = function () {
-		touchContainer = new Hammer(document.querySelector('#image-container'));
-		touchContainer.on('swipeleft', function () {
-			slideshowNext();
-			hideElements([$('#controls')[0], $('#config .handle')[0]], 'fast');
-		});
-		touchContainer.on('swiperight', function () {
-			slideshowBack()
-			hideElements([$('#controls')[0], $('#config .handle')[0]], 'fast');
-		});
+		var touchContainer = new Hammer($('#image-container')[0]);
+		
+		touchContainer.on('swipeleft', slideshowNext);
+		touchContainer.on('swiperight', slideshowBack);
 		
 		$('#image-container').mousemove(movementListener);
 		$('#controls, #config').mouseenter(cancelHideListener);
 		$('#image-container')[0].addEventListener('touchend', touchListener, false);
 	
 		$('#input-files').change(handleFiles);
-		//$('#speed').change(countdownRestart);
+		$('#speed').change(function () {
+			countdownRestart();
+			slideshowPause();
+		});
 		$('#next').click(slideshowNext);
 		$('#previous').click(slideshowBack);
 		$('#pause').click(slideshowPauseToggle);
@@ -320,5 +326,8 @@
 		
 		toSwitch($('#desaturate')[0], grayscale);
 		toSwitch($('#shrink')[0], shrink);
+		$('#shrink').change(function (e) { toggleSwipe(e, touchContainer); });
+		
+		$(document).keyup(shortcutsListener);
 	}
 })();

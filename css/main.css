@@ -246,6 +246,32 @@ label.switch.checked .widget:after {
 	top: 0; right: 0; bottom: 0; left: 0;
 	background-color: hsla(0,0%,0%,.2);
 }
+/* shortcut keys */
+span.key {
+	font-size: 16px;
+	color: black;
+	text-align: center;
+	display: inline-block;
+	width: 24px;
+	line-height: 24px;
+	margin-right: .5em;
+	border: 1px outset hsl(0,0%,94%);
+	border-radius: 4px;
+	background-image: linear-gradient(to right, hsla(0,0%,0%,.1), hsla(0,0%,0%,0) 90%);
+	background-color: hsl(0,0%,100%);
+	box-shadow: 1px 1px 2px 0 hsla(0,0%,0%,.1);
+	cursor: default;
+}
+.keyboard-list {
+	margin: 1em 0;
+	padding: 0;
+	list-style: none;
+}
+.keyboard-list li {
+	margin: 0 0 .5em 0;
+	color: hsl(0,0%,30%);
+	font-size: 12px;
+}
 /* Hammer.js: when viewing full size image, don't enable swipe gesture. */
 body:not(.shrink) #image-container {
 	touch-action: auto !important;

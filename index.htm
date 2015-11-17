@@ -15,8 +15,8 @@
 <svg style="display: none">
 	<def>
 		<rect id="svg-vb" x="6" width="6" height="32" />
-		<polygon id="svg-arr" points="0,0 32,16 0,32" />
-		<polygon id="svg-arr-thin" points="4,0 28,16 4,32  4,28 20,16 4,4" />
+		<polygon id="svg-arr" points="4,0 32,16 4,32" />
+		<polygon id="svg-arr-thin" points="8,0 28,16 8,32  8,24 16,16 8,8" />
 		<rect id="svg-hb" width="24" height="4" />
 	</def>
 </svg>
@@ -28,6 +28,16 @@
 		<section id="about">
 			<p>Practice gesture drawing and quick sketching using your favorite reference photos.</p>
 			<p>Your images cannot be seen by anybody else and do not get saved.</p>
+			<h3>Keyboard Shortcuts</h3>
+			<ul class="keyboard-list">
+				<li><span class="key" data-key="a">A</span> Previous image</li>
+				<li><span class="key" data-key="d">D</span> Next</li>
+				<li><span class="key" data-key="s">S</span> Pause/resume</li>
+				<li><span class="key" data-key="w">W</span> Open and close options</li>
+				<li><span class="key" data-key="q">Q</span> Shrink to fit</li>
+				<li><span class="key" data-key="e">E</span> Black & white</li>
+				<li><span class="key" data-key="z">Z</span> Change speed, use with up and down arrow keys</li>
+			</ul>
 			<h2>Attributions</h2>
 			<ul>
 				<li><a href="http://keith-wood.name/countdown.html">jQuery Countdown</a></li>
@@ -51,8 +61,8 @@
 				</select>
 			</p>
 			<p>Delay:
-				<label><input type="radio" name="delay" id="delay-0s" value="0" /> none</label>
-				<label><input type="radio" name="delay" id="delay-1s" value="1000" checked /> 1 second</label>
+				<label><input type="radio" name="delay" id="delay-0s" value="0" checked /> none</label>
+				<label><input type="radio" name="delay" id="delay-1s" value="1000" /> 1 second</label>
 				<label><input type="radio" name="delay" id="delay-2s" value="2000" /> 2 seconds</label>
 			</p>
 			<ul class="toggles">
@@ -77,7 +87,7 @@
 </section>
 
 <section id="slideshow">
-	<div id="image-container"></div>
+	<div id="image-container"><img /></div>
 	<div id="time-limit"></div>
 	<div id="controls" class="hide">
 		<button id="previous" title="back">
