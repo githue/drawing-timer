@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Draw Timer</title>
+<link rel="stylesheet" href="css/main.css" />
+<script src="js/jquery-2.1.4.min.js"></script>
+<script src="js/jquery.plugin.min.js"></script>
+<script src="js/jquery.countdown.min.js"></script>
+<script src="js/hammer.min.js"></script>
+<script src="js/main.js"></script>
+</head>
+<body>
+<svg style="display: none">
+	<def>
+		<rect id="svg-vb" x="6" width="6" height="32" />
+		<polygon id="svg-arr" points="4,0 32,16 4,32" />
+		<polygon id="svg-arr-thin" points="8,0 28,16 8,32  8,24 16,16 8,8" />
+		<rect id="svg-hb" width="24" height="4" />
+	</def>
+</svg>
+
+<section id="config">
+	<div class="panel">
+		<h1><a href="#settings">DrawTimer</a></h1>
+		<a id="link-about" href="#about">about</a>
+		<section id="about">
+			<p>Practice gesture drawing and quick sketching using your favorite reference photos.</p>
+			<p>Your images cannot be seen by anybody else and do not get saved.</p>
+			<h3>Keyboard Shortcuts</h3>
+			<ul class="keyboard-list">
+				<li><span class="key" data-key="a">A</span> Previous image</li>
+				<li><span class="key" data-key="d">D</span> Next</li>
+				<li><span class="key" data-key="s">S</span> Pause/resume</li>
+				<li><span class="key" data-key="w">W</span> Open and close options</li>
+				<li><span class="key" data-key="q">Q</span> Shrink to fit</li>
+				<li><span class="key" data-key="e">E</span> Black & white</li>
+				<li><span class="key" data-key="z">Z</span> Change speed, use with up and down arrow keys</li>
+			</ul>
+			<h2>Attributions</h2>
+			<ul>
+				<li><a href="http://keith-wood.name/countdown.html">jQuery Countdown</a></li>
+				<li><a href="http://hammerjs.github.io/">Hammer.js</a></li>
+			</ul>
+		</section>
+		<section id="settings" class="default">
+			<p>Speed:
+				<select id="speed">
+					<option value="3">3 seconds</option>
+					<option value="30" selected>30 seconds</option>
+					<option value="60">1 minute</option>
+					<option value="120">2 minutes</option>
+					<option value="180">3 minutes</option>
+					<option value="240">4 minutes</option>
+					<option value="300">5 minutes</option>
+					<option value="600">10 minutes</option>
+					<option value="1200">20 minutes</option>
+					<option value="2400">40 minutes</option>
+					<option value="3600">1 hour</option>
+				</select>
+			</p>
+			<p>Delay:
+				<label><input type="radio" name="delay" id="delay-0s" value="0" checked /> none</label>
+				<label><input type="radio" name="delay" id="delay-1s" value="1000" /> 1 second</label>
+				<label><input type="radio" name="delay" id="delay-2s" value="2000" /> 2 seconds</label>
+			</p>
+			<ul class="toggles">
+				<li><label><input type="checkbox" id="shrink" checked> Shrink to fit</label></li>
+				<li><label><input type="checkbox" id="desaturate"> Black & white</label></li>
+			</ul>
+			<h2>Reference images</h2>
+			<p><input type="file" id="input-files" multiple /></p>
+			<p><button id="restart">Start again</button></p>
+		</section>
+	</div>
+	
+	<div class="handle hide">
+		<svg id="svg-handle" width="24" height="24">
+			<g>
+				<use xlink:href="#svg-hb" y="0" />
+				<use xlink:href="#svg-hb" y="8" />
+				<use xlink:href="#svg-hb" y="16" />
+			</g>
+		</svg>
+	</div>
+</section>
+
+<section id="slideshow">
+	<div id="image-container"><img /></div>
+	<div id="time-limit"></div>
+	<div id="controls" class="hide">
+		<button id="previous" title="back">
+			<svg width="32" height="32">
+				<use xlink:href="#svg-arr-thin" transform="translate(32,32) rotate(180)" />
+			</svg>
+		</button>
+		<button id="pause" title="pause/resume">
+			<svg width="32" height="32">
+				<g id="icon-pause">
+					<use xlink:href="#svg-vb" x="0" />
+					<use xlink:href="#svg-vb" x="12" />
+				</g>
+				<use id="icon-play" xlink:href="#svg-arr" />
+			</svg>
+		</button>
+		<button id="next" title="next">
+			<svg width="32" height="32">
+				<use xlink:href="#svg-arr-thin" />
+			</svg>
+		</button>
+	</div>
+</section>
+</body>
+
+</html>
