@@ -241,6 +241,18 @@ label.switch.checked .widget:after {
 	margin-left: 1em;
 	background-color: hsl(207, 70%, 50%);
 }
+label.switch.disabled {
+	color: hsl(0,0%,50%);
+	background-color: transparent;
+}
+label.switch.disabled .widget {
+	cursor: default;
+}
+label.switch.disabled:after {
+	content: 'Not supported in MS Internet Explorer or Edge.';
+	display: block;
+	font-size: 12px;
+}
 .shim {
 	position: absolute;
 	top: 0; right: 0; bottom: 0; left: 0;
