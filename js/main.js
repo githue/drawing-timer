@@ -191,6 +191,10 @@
 		var label = checkbox.parentNode
 		, newSwitch;
 		if (label.tagName !== 'LABEL') return;
+
+		if (checkbox.getAttribute('disabled')) {
+			label.classList.add('disabled');
+		}
 	
 		label.classList.add('switch');
 		
@@ -304,18 +308,24 @@
 		if (k === 90) { $('#speed').focus(); } // [z]
 		if (k === 87) { configPanel(); } // [w]
 	};
+	// edge: is any version of ie including edge.
+	// ie: is anything prior to edge.
+	var browser = {
+		edge: !!window.MSInputMethodContext,
+		ie: !!window.MSInputMethodContext && !!document.documentMode
+	};
 	window.onload = function () {
 		var touchContainer = new Hammer($('#image-container')[0]);
-		
+
 		touchContainer.on('swipeleft', slideshowNext);
 		touchContainer.on('swiperight', slideshowBack);
 		hideElements($('#slideshow')[0], 'fast');
 		$('#restart').hide();
-		
+
 		$('#image-container').mousemove(movementListener);
 		$('#controls, #config').mouseenter(cancelHideListener);
 		$('#image-container')[0].addEventListener('touchend', touchListener, false);
-	
+
 		$('#input-files').change(handleFiles);
 		$('#speed').change(function () {
 			countdownRestart();
@@ -325,12 +335,19 @@
 		$('#previous').click(slideshowBack);
 		$('#pause').click(slideshowPauseToggle);
 		$('#restart').click(handleFiles);
-		
+
 		$('#config .handle').click( function (e) { configPanel(); });
-		
+
+		// currently no IE version supports CSS filters.
+		if (browser.edge) {
+			$('#desaturate').attr('disabled', true);
+		}
+
+		$('#shrink').change(function (e) { toggleSwipe(e, touchContainer); });
+
+		// Make sure toSwitch() happens near the end.
 		toSwitch($('#desaturate')[0], grayscale);
 		toSwitch($('#shrink')[0], shrink);
-		$('#shrink').change(function (e) { toggleSwipe(e, touchContainer); });
 		
 		$(document).keyup(shortcutsListener);
 	}
