@@ -25,7 +25,7 @@
 				$('#time-limit').countdown('destroy');
 				hideElements($('#slideshow')[0], 'fast');
 				document.body.classList.remove('slideshow-started');
-				configPanel().show;
+				configPanel('show');
 				$('#restart').show();
 				return;
 			}
@@ -44,7 +44,7 @@
 		},
 		forward: function () {
 			if (this.pos >= this.array.length - 1) return;
-			change(this.array[++this.pos], 500, 0);
+			change(this.array[++this.pos], 500, getDelay());
 		}
 	};
 	var findNextImage = function () {
@@ -57,31 +57,28 @@
 			playlist.next(playlist.pos++);
 		}
 	};
-	var initializeSlideshow = function (e) {
-		var $shim = $('#config .shim')[0] || $('<div class="shim" />');
-
-		document.querySelector('#previous').removeAttribute('hidden');
-		document.querySelector('#pause').removeAttribute('hidden');
-		document.querySelector('#next').removeAttribute('hidden');
-		
-		document.body.classList.add('slideshow-started');
-		
-		// Hide the panel after a delay, to ensure they see where it goes.
-		$('#config .panel').append($shim);
-		setTimeout(function () {
-			$('#config .shim').remove();
-			configPanel().hide;
-		}, 800);
-		
-		findNextImage();
-	};
 	var handleFiles = function (e) {
 		var files = document.querySelector('#input-files').files;
 		playlist.create(files);
 		initializeSlideshow();
 	};
+	var initializeSlideshow = function (e) {
+		var $shim = $('#config .shim')[0] || $('<div class="shim" />');
+
+		// Begin after a delay.
+		$('#config .panel').append($shim);
+		setTimeout(function () {
+			document.body.classList.add('slideshow-started');
+			$('#config .shim').remove();
+			configPanel('hide');
+			$('#restart').hide();
+			showElements($('#slideshow')[0], 'fast');
+			findNextImage();
+		}, 800);
+	};
+	// TODO: reader.onloadstart
 	var change = function (img, speed, delay) {
-		var $slideshow = $('#slideshow #image-container');
+		var $slideshow = $('#image-container');
 		
 		// Handle load event.
 		reader.onload = function (e) {
@@ -225,31 +222,36 @@
 			document.body.classList.remove('shrink');
 		}
 	};
-	var configPanel = function () {
-		var panel = document.querySelector('#config .panel'),
-		isRetracted = panel.classList.contains('retract');
-	
-		var show = function () {
+	var configPanel = function (action) {
+		var panel = document.querySelector('#config .panel')
+		, retracted = panel.classList.contains('retract');
+
+		var hide = function () {
 			panel.classList.add('retract');
 			panel.style.marginTop = -panel.offsetHeight + 'px';
 			slideshowResume();
 		};
-		
-		var hide = function () {
+
+		var show = function () {
 			panel.classList.remove('retract');
 			panel.style.marginTop = '';
 			slideshowPause();
 		};
-		
-		// Default toggle behavior.
-		if (isRetracted) {
-			hide();
-		} else {
-			show();
-		}
-		return {
-			show: this.show,
-			hide: this.hide
+
+		switch (action) {
+			case 'show':
+				show();
+				break;
+			case 'hide':
+				hide();
+				break;
+			default:
+				if (retracted) {
+					show();
+				} else {
+					hide();
+				}
+				break;
 		}
 	};
 	var hideElementsTimeout;
@@ -307,6 +309,8 @@
 		
 		touchContainer.on('swipeleft', slideshowNext);
 		touchContainer.on('swiperight', slideshowBack);
+		hideElements($('#slideshow')[0], 'fast');
+		$('#restart').hide();
 		
 		$('#image-container').mousemove(movementListener);
 		$('#controls, #config').mouseenter(cancelHideListener);
@@ -320,9 +324,9 @@
 		$('#next').click(slideshowNext);
 		$('#previous').click(slideshowBack);
 		$('#pause').click(slideshowPauseToggle);
-		$('#restart').click(handleFiles).hide();
+		$('#restart').click(handleFiles);
 		
-		$('#config .handle').click(configPanel);
+		$('#config .handle').click( function (e) { configPanel(); });
 		
 		toSwitch($('#desaturate')[0], grayscale);
 		toSwitch($('#shrink')[0], shrink);

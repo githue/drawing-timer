@@ -140,7 +140,6 @@ body:not(.slideshow-started) #config .handle {
 	display: block;
 }
 #slideshow {
-	visibility: hidden;
 	text-align: center;
 	color: white;
 	position: absolute;
@@ -185,6 +184,7 @@ body.countdown-paused #time-limit:after {
 	display: block;
 	text-align: center;
 }
+/* TODO: hide the option under IE/Edge */
 body.desaturate #slideshow img {
 	-webkit-filter: grayscale(100%);
 	filter: grayscale(100%);
