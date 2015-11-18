@@ -120,7 +120,7 @@ body:not(.slideshow-started) #config .handle {
 		padding: 0;
 	}
 }
-#link-about {
+.link-about {
 	display: block;
 	position: absolute;
 	top: 16px;
