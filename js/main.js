@@ -21,12 +21,7 @@
 		next: function () {
 			var img = this.array[playlist.pos];
 			if (playlist.pos >= this.array.length) {
-				// The end. Provide a way to restart.
-				$('#time-limit').countdown('destroy');
-				hideElements($('#slideshow')[0], 'fast');
-				document.body.classList.remove('slideshow-started');
-				configPanel('show');
-				$('#restart').show();
+				slideshowEnd();
 				return;
 			}
 			// Change to a new image.
@@ -72,6 +67,7 @@
 			$('#config .shim').remove();
 			configPanel('hide');
 			$('#restart').hide();
+			setTimeout(function () { $('#reset').show(); }, 500);
 			showElements($('#slideshow')[0], 'fast');
 			findNextImage();
 		}, 800);
@@ -314,6 +310,19 @@
 		edge: !!window.MSInputMethodContext,
 		ie: !!window.MSInputMethodContext && !!document.documentMode
 	};
+	var slideshowEnd = function () {
+		// The end.
+		// Let the user start over.
+		$('#time-limit').countdown('destroy');
+		hideElements($('#slideshow')[0], 'fast');
+		document.body.classList.remove('slideshow-started');
+		configPanel('show');
+		$('#restart').show();
+		$('#reset').hide();
+	};
+	var handleReset = function (e) {
+		slideshowEnd();
+	};
 	window.onload = function () {
 		var touchContainer = new Hammer($('#image-container')[0]);
 
@@ -321,6 +330,7 @@
 		touchContainer.on('swiperight', slideshowBack);
 		hideElements($('#slideshow')[0], 'fast');
 		$('#restart').hide();
+		$('#reset').hide();
 
 		$('#image-container').mousemove(movementListener);
 		$('#controls, #config').mouseenter(cancelHideListener);
@@ -335,6 +345,7 @@
 		$('#previous').click(slideshowBack);
 		$('#pause').click(slideshowPauseToggle);
 		$('#restart').click(handleFiles);
+		$('#reset').click(handleReset);
 
 		$('#config .handle').click( function (e) { configPanel(); });
 

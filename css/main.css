@@ -5,6 +5,9 @@ body {
 	padding: 0 15px;
 	background: black;
 }
+a {
+	color: hsl(210, 90%, 40%);
+}
 button, input, select, option {
 	font-family: arial;
 	font-size: 16px;
