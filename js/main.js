@@ -323,6 +323,10 @@
 	var handleReset = function (e) {
 		slideshowEnd();
 	};
+	var handleSectionLink = function (e) {
+		// bandaid fix to undo auto scroll.
+		setTimeout(function () { scrollTo(0,0) }, 0);
+	};
 	window.onload = function () {
 		var touchContainer = new Hammer($('#image-container')[0]);
 
@@ -346,6 +350,7 @@
 		$('#pause').click(slideshowPauseToggle);
 		$('#restart').click(handleFiles);
 		$('#reset').click(handleReset);
+		$('.link-about, h1 a').click(handleSectionLink);
 
 		$('#config .handle').click( function (e) { configPanel(); });
 
