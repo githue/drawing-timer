@@ -36,7 +36,7 @@ h1 {
 	font-weight: normal;
 	letter-spacing: 2px;
 	border-bottom: 1px solid hsl(0,0%,80%);
-	padding: 10px 15px;
+	padding: 0;
 	background: hsl(210,20%,20%);
 	color: white;
 	text-shadow: 1px 1px 1px hsla(0,0%,0%,.5);
@@ -44,6 +44,11 @@ h1 {
 h1 a {
 	color: inherit;
 	text-decoration: inherit;
+	display: inline-block;
+	padding: 10px 15px;
+}
+h1 a:hover {
+	background-color: hsl(210,30%,30%);
 }
 h2 {
 	font-size: 120%;
@@ -116,18 +121,16 @@ body:not(.slideshow-started) #config .handle {
 	fill: hsla(0,0%,100%,.9);
 }
 @media (max-width: 500px) {
-	#config {
-		width: 100vw;
-	}
-	body {
-		padding: 0;
-	}
+	#config { width: 100%; }
+	h1 { letter-spacing: 1px; }
+	body { padding: 0; }
 }
 .link-about {
 	display: block;
 	position: absolute;
+	padding: 0 15px;
 	top: 16px;
-	right: 15px;
+	right: 0px;
 	color: hsla(0,0%,100%,.5);
 	text-decoration: none;
 	font-size: 12px;
