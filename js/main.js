@@ -70,6 +70,7 @@
 			setTimeout(function () { $('#reset').show(); }, 500);
 			showElements($('#slideshow')[0], 'fast');
 			findNextImage();
+			$('#share').show();
 		}, 800);
 	};
 	// TODO: reader.onloadstart
