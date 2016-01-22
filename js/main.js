@@ -26,7 +26,7 @@
 			}
 			// Change to a new image.
 			change(img, 500, getDelay());
-			
+
 			// Update the playlist history.
 			playHistory.array.push(img);
 			playHistory.pos = playHistory.array.length - 1;
@@ -76,22 +76,22 @@
 	// TODO: reader.onloadstart
 	var change = function (img, speed, delay) {
 		var $slideshow = $('#image-container');
-		
+
 		// Handle load event.
 		reader.onload = function (e) {
 			$('#image-container img')[0].src = e.target.result;
 			showElements($slideshow[0], 'fast', delay);
 		}
-		
+
 		// begin fade out.
 		hideElements($slideshow[0], 'fast'); // 500 ms
 		$('#time-limit').countdown('destroy');
-		
+
 		// Change to next image after fade.
 		setTimeout(function () {
 			reader.readAsDataURL(img);
 		}, speed);
-		
+
 		// Restart the countdown timer
 		setTimeout(countdownRestart, delay + speed);
 	};
@@ -192,19 +192,19 @@
 		if (checkbox.getAttribute('disabled')) {
 			label.classList.add('disabled');
 		}
-	
+
 		label.classList.add('switch');
-		
+
 		if (checkbox.checked) {
 			label.classList.add('checked');
 			callback(checkbox);
 		}
-		
+
 		checkbox.addEventListener('change', function (event) {
 			event.target.parentNode.classList.toggle('checked');
 			callback(event.target);
 		}, false);
-		
+
 		newSwitch = document.createElement('span');
 		newSwitch.classList.add('widget');
 		label.insertBefore(newSwitch, checkbox);
@@ -276,7 +276,7 @@
 		var elements = document.querySelectorAll('#controls, #config .handle');
 		// Create touched property to intercept mousemove event.
 		touch.touched = true;
-	
+
 		if (elements[0].classList.contains('show')) {
 			hideElements(elements, 'fast');
 		}
@@ -294,9 +294,9 @@
 	};
 	var shortcutsListener = function (e) {
 		var k = e.keyCode;
-		
+
 		//console.log(k);
-		
+
 		if (k === 69) { $('#desaturate').click(); } // [e]
 		if (k === 81) { $('#shrink').click(); } // [q]
 		if (k === 83) { $('#pause').click(); } // [s]
@@ -353,7 +353,7 @@
 		$('#reset').click(handleReset);
 		$('.link-about, h1 a').click(handleSectionLink);
 
-		$('#config .handle').click( function (e) { configPanel(); });
+		$('#config .handle, #config .hide-config').click( function (e) { configPanel(); });
 
 		// currently no IE version supports CSS filters.
 		if (browser.edge) {
@@ -365,7 +365,7 @@
 		// Make sure toSwitch() happens near the end.
 		toSwitch($('#desaturate')[0], grayscale);
 		toSwitch($('#shrink')[0], shrink);
-		
+
 		$(document).keyup(shortcutsListener);
 	}
 })();

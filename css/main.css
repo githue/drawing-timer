@@ -100,6 +100,24 @@ body:not(.slideshow-started) #config .handle {
 	visibility: visible !important;
 	opacity: 1 !important;
 }
+.hide-config {
+	margin: 15px -15px -15px -15px;
+	padding: 5px 0;
+	border-radius: 0 0 10px 10px;
+	border-top: 1px solid hsl(0,0%,80%);
+	text-align: center;
+	cursor: pointer;
+}
+.hide-config svg {
+	display: block;
+	margin: auto;
+}
+.hide-config use {
+	fill: hsl(210,10%,70%);
+}
+.hide-config:hover use {
+	fill: hsl(210,10%,50%);
+}
 #controls {
 	text-align: center;
 	padding: 15px;
