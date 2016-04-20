@@ -28,7 +28,7 @@
 		<a class="link-about" href="#about">about</a>
 		<section id="about">
 			<p>Practice gesture drawing and quick sketching using reference photos from your computer, tablet or phone.</p>
-			<p>Your images cannot be seen by anybody else and do not get saved anywhere.</p>
+			<p>Absolutely no image data is uploaded.</p>
 			<h2>Keyboard Shortcuts</h2>
 			<ul class="keyboard-list">
 				<li><span class="key" data-key="a">A</span> Previous image</li>
@@ -55,17 +55,20 @@
 			</div>
 			<p>Time:
 				<select id="speed">
-					<option value="30" selected>30 seconds</option>
-					<option value="60">1 minute</option>
-					<option value="120">2 minutes</option>
-					<option value="180">3 minutes</option>
-					<option value="240">4 minutes</option>
-					<option value="300">5 minutes</option>
-					<option value="600">10 minutes</option>
-					<option value="1200">20 minutes</option>
-					<option value="2400">40 minutes</option>
-					<option value="3600">1 hour</option>
+					<option value=".5" selected>30 seconds</option>
+					<option value="1">1 minute</option>
+					<option value="2">2 minutes</option>
+					<option value="3">3 minutes</option>
+					<option value="4">4 minutes</option>
+					<option value="5">5 minutes</option>
+					<option value="10">10 minutes</option>
+					<option value="20">20 minutes</option>
+					<option value="40">40 minutes</option>
+					<option value="" id="opt-custom-time">custom...</option>
 				</select>
+				<label id="custom-time">
+					<input type="text" value="" name="custom-time" size="3" maxlength="3" /> minutes
+				</label>
 			</p>
 			<p>Delay:
 				<label><input type="radio" name="delay" id="delay-0s" value="0" checked /> none</label>

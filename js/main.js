@@ -129,8 +129,32 @@
 	var countdownRestart = function () {
 		if (!document.body.classList.contains('slideshow-started')) return;
 		$('#time-limit').countdown('destroy');
-		countdownAdd(getSpeed());
+		countdownAdd(getSpeed() * 60);
 		slideshowResume();
+	};
+	var setSpeed = function (input) {
+		var val = $('#speed option:selected').val();
+
+		if ($('#speed option:selected').is('#opt-custom-time')) {
+			$('#custom-time').show().find('input').focus();
+			if (!input) return;
+		} else {
+			$('#custom-time').hide();
+		}
+
+		if (!isNaN(val) && val >= .5) {
+			// Restart the timer and pause immediately.
+			countdownRestart();
+			slideshowPause();
+			$('#time-limit').addClass('changed');
+			setTimeout(function () {
+				$('#time-limit').removeClass('changed');
+			}, 150);
+		}
+	};
+	var handleCustomTimeInput = function (e) {
+		$('#opt-custom-time').val(e.target.value);
+		setSpeed(true);
 	};
 	var getSpeed = function () {
 		return +$('#speed option:selected').val();
@@ -355,10 +379,8 @@
 		$('#image-container')[0].addEventListener('touchend', touchListener, false);
 
 		$('#input-files').change(handleFiles);
-		$('#speed').change(function () {
-			countdownRestart();
-			slideshowPause();
-		});
+		$('#speed').change(setSpeed);
+		$('#custom-time').hide().find('input').keyup(handleCustomTimeInput);
 		$('#next').click(slideshowNext);
 		$('#previous').click(slideshowBack);
 		$('#pause').click(slideshowPauseToggle);
