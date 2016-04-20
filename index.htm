@@ -35,9 +35,10 @@
 				<li><span class="key" data-key="d">D</span> Next</li>
 				<li><span class="key" data-key="s">S</span> Pause/resume</li>
 				<li><span class="key" data-key="w">W</span> Open and close options</li>
+				<li><span class="key" data-key="t">T</span> Toggle timer visibility</li>
 				<li><span class="key" data-key="q">Q</span> Shrink to fit</li>
 				<li><span class="key" data-key="e">E</span> Black & white</li>
-				<li><span class="key" data-key="z">Z</span> Change speed, use with up and down arrow keys</li>
+				<li><span class="key" data-key="z">Z</span> Change time, use with up and down arrow keys</li>
 			</ul>
 			<h2>Feedback</h2>
 			<p>Report issues or give feedback <a href="https://github.com/githue/drawing-timer">here</a>.</p>
@@ -72,8 +73,9 @@
 				<label><input type="radio" name="delay" id="delay-2s" value="2000" /> 2 seconds</label>
 			</p>
 			<ul class="toggles">
-				<li><label><input type="checkbox" id="shrink" checked> Shrink to fit</label></li>
-				<li><label><input type="checkbox" id="desaturate"> Black & white</label></li>
+				<li><label class="switch"><input type="checkbox" id="timer-visible" checked> Show countdown timer</label></li>
+				<li><label class="switch"><input type="checkbox" id="shrink" checked> Shrink to fit</label></li>
+				<li><label class="switch"><input type="checkbox" id="desaturate"> Black & white</label></li>
 			</ul>
 			<h2>Reference images</h2>
 			<p><input type="file" id="input-files" multiple /></p>
