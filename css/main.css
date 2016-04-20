@@ -194,9 +194,6 @@ body.shrink #image-container img {
 body.slideshow-started #slideshow {
 	visibility: visible;
 }
-body:not(.timer-visible) #time-limit {
-	visibility: hidden;
-}
 #time-limit {
 	position: absolute;
 	top: 0;

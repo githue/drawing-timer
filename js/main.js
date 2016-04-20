@@ -90,6 +90,7 @@
 		// Change to next image after fade.
 		setTimeout(function () {
 			reader.readAsDataURL(img);
+			setTimeout(function() { adjustControlsPosition() }, 1000); // allow enough time to pass.
 		}, speed);
 
 		// Restart the countdown timer
@@ -171,6 +172,7 @@
 		if (!elements.length) elements = [elements];
 		if (!speed) speed = 'none';
 		for (var i = 0; i < elements.length; i++) {
+			if (!elements[i]) return;
 			// TODO: search for attached transition-speed instead of blindly
 			// removing them all.
 			elements[i].classList.remove('show', 'transition-fast', 'transition-slow', 'transition-none');
@@ -187,6 +189,7 @@
 		if (!speed) speed = 'none';
 		setTimeout(function () {
 			for (var i = 0; i < elements.length; i++) {
+				if (!elements[i]) return;
 				elements[i].classList.remove('hide', 'transition-fast', 'transition-slow', 'transition-none');
 				elements[i].classList.add('show', 'transition-' + speed);
 			}
@@ -250,6 +253,7 @@
 		} else {
 			document.body.classList.remove(className);
 		}
+		adjustControlsPosition();
 	};
 	var timerVisible = function (target) {
 		var className = 'timer-visible';
@@ -301,15 +305,15 @@
 		// change from touch screen to mouse.
 		if (touch.touched) return;
 		cancelHideListener();
-		showElements([$('#controls')[0], $('#config .handle')[0]], 'fast');
+		showElements([$('#controls')[0], $('#config .handle')[0], $('body:not(.timer-visible) #time-limit')[0]], 'fast');
 		hideElementsTimeout = setTimeout(mouseStopped, 1000);
 	};
 	var mouseStopped = function () {
 		cancelHideListener();
-		hideElements([$('#controls')[0], $('#config .handle')[0]], 'fast');
+		hideElements([$('#controls')[0], $('#config .handle')[0], $('body:not(.timer-visible) #time-limit')[0]], 'fast');
 	};
 	var touchListener = function (e) {
-		var elements = document.querySelectorAll('#controls, #config .handle');
+		var elements = document.querySelectorAll('#controls, #config .handle, body:not(.timer-visible) #time-limit');
 		// Create touched property to intercept mousemove event.
 		touch.touched = true;
 
@@ -327,6 +331,20 @@
 		} else {
 			obj.get('swipe').set({ enable: false });
 		}
+	};
+	/**
+	 * Account for scrollbars when shrink-to-fit is off.
+	 */
+	var adjustControlsPosition = function () {
+		var container = $('#image-container');
+		var controls = $('#controls');
+		// results should equal 0 or ~17 (scrollbar width).
+		var scroll = {
+			width: container.outerWidth() - container[0].clientWidth,
+			height: container.outerHeight() - container[0].clientHeight
+		}
+		controls.css({right: scroll.width});
+		controls.css({bottom: scroll.height});
 	};
 	var shortcutsListener = function (e) {
 		var k = e.keyCode;
