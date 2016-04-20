@@ -20,8 +20,8 @@ input[type="reset"] {
 	padding: 5px 10px;
 	line-height: 1;
 }
-select {
-	padding: 5px 5px 5px 0;
+select, #custom-time input {
+	padding: 5px 5px 5px 3px;
 }
 button svg {
 	display: block;
@@ -214,7 +214,12 @@ body.countdown-paused #time-limit:after {
 	display: block;
 	text-align: center;
 }
-/* TODO: hide the option under IE/Edge */
+#time-limit.changed {
+	animation: alert-change .15s;
+}
+@keyframes alert-change {
+	to { color: black; background-color: hsla(49,100%,50%,1); }
+}
 body.desaturate #slideshow img {
 	-webkit-filter: grayscale(100%);
 	filter: grayscale(100%);
@@ -338,7 +343,8 @@ body:not(.shrink) #image-container {
 }
 #share {
 	display: none;
-	float: right;
+	text-align: center;
+	margin: .5em 0 0 0;
 }
 #tweet {
 	display: inline-block;
