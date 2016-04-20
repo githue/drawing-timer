@@ -193,7 +193,9 @@
 			label.classList.add('disabled');
 		}
 
-		label.classList.add('switch');
+		if (!label.classList.contains('switch')) {
+			label.classList.add('switch');
+		}
 
 		if (checkbox.checked) {
 			label.classList.add('checked');
@@ -210,17 +212,27 @@
 		label.insertBefore(newSwitch, checkbox);
 	}
 	var grayscale = function (target) {
+		var className = 'desaturate';
 		if (target.checked) {
-			document.body.classList.add('desaturate');
+			document.body.classList.add(className);
 		} else {
-			document.body.classList.remove('desaturate');
+			document.body.classList.remove(className);
 		}
 	};
 	var shrink = function (target) {
+		var className = 'shrink';
 		if (target.checked) {
-			document.body.classList.add('shrink');
+			document.body.classList.add(className);
 		} else {
-			document.body.classList.remove('shrink');
+			document.body.classList.remove(className);
+		}
+	};
+	var timerVisible = function (target) {
+		var className = 'timer-visible';
+		if (target.checked) {
+			document.body.classList.add(className);
+		} else {
+			document.body.classList.remove(className);
 		}
 	};
 	var configPanel = function (action) {
@@ -304,6 +316,7 @@
 		if (k === 65) { $('#previous').click(); } // [a]
 		if (k === 90) { $('#speed').focus(); } // [z]
 		if (k === 87) { configPanel(); } // [w]
+		if (k === 84) { $('#timer-visible').click(); } // [t]
 	};
 	// edge: is any version of ie including edge.
 	// ie: is anything prior to edge.
@@ -365,6 +378,7 @@
 		// Make sure toSwitch() happens near the end.
 		toSwitch($('#desaturate')[0], grayscale);
 		toSwitch($('#shrink')[0], shrink);
+		toSwitch($('#timer-visible')[0], timerVisible);
 
 		$(document).keyup(shortcutsListener);
 	}

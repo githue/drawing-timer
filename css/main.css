@@ -194,6 +194,9 @@ body.shrink #image-container img {
 body.slideshow-started #slideshow {
 	visibility: visible;
 }
+body:not(.timer-visible) #time-limit {
+	visibility: hidden;
+}
 #time-limit {
 	position: absolute;
 	top: 0;
@@ -309,7 +312,7 @@ span.key {
 .keyboard-list li {
 	margin: 0 0 .5em 0;
 	color: hsl(0,0%,30%);
-	font-size: 12px;
+	font-size: 14px;
 }
 /* Hammer.js: when viewing full size image, don't enable swipe gesture. */
 body:not(.shrink) #image-container {
