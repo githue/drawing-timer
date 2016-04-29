@@ -69,7 +69,7 @@ h2 {
 	margin-top: 0;
 	transition: margin .4s, opacity .6s;
 	transition-timing-function: ease;
-	box-shadow: 1px 2px 5px 0 hsla(0, 0%, 0%, .5);
+	box-shadow: 0px 2px 5px 0 hsla(0, 0%, 0%, .5);
 }
 #config .panel.retract {
 	opacity: 0;
@@ -260,7 +260,7 @@ label.switch .widget:after {
 	width: 1.4em;
 	height: 1.4em;
 	background: hsl(0,0%,90%);
-	box-shadow: 1px 1px 4px 0px hsla(0,0%,0%,.4);
+	box-shadow: 0px 1px 4px 0px hsla(0,0%,0%,.4);
 	border-radius: 50%;
 	position: absolute;
 	cursor: pointer;
@@ -281,7 +281,7 @@ label.switch.disabled .widget {
 	cursor: default;
 }
 label.switch.disabled:after {
-	content: 'Not supported in MS Internet Explorer or Edge.';
+	content: 'Not supported in MS Internet Explorer.';
 	display: block;
 	font-size: 12px;
 }
