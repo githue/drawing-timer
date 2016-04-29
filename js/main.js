@@ -54,23 +54,28 @@
 	};
 	var handleFiles = function (e) {
 		var files = document.querySelector('#input-files').files;
+		if (!files.length) return $('#restart').hide();
 		playlist.create(files);
 		initializeSlideshow();
 	};
 	var initializeSlideshow = function (e) {
 		var $shim = $('#config .shim')[0] || $('<div class="shim" />');
 
-		// Begin after a delay.
+		// Begin after an arbitrary delay.
 		$('#config .panel').append($shim);
 		setTimeout(function () {
 			document.body.classList.add('slideshow-started');
 			$('#config .shim').remove();
-			configPanel('hide');
 			$('#restart').hide();
-			setTimeout(function () { $('#reset').show(); }, 500);
+
+			setTimeout(function () {
+				$('#reset, #share').show();
+				configPanel('refreshPos');
+			}, 600); // same as opacity duration
+
 			showElements($('#slideshow')[0], 'fast');
 			findNextImage();
-			$('#share').show();
+			configPanel('hide');
 		}, 800);
 	};
 	// TODO: reader.onloadstart
@@ -279,12 +284,19 @@
 			slideshowPause();
 		};
 
+		var refreshPos = function () {
+			panel.style.marginTop = -panel.offsetHeight + 'px';
+		};
+
 		switch (action) {
 			case 'show':
 				show();
 				break;
 			case 'hide':
 				hide();
+				break;
+			case 'refreshPos':
+				refreshPos();
 				break;
 			default:
 				if (retracted) {
@@ -360,8 +372,8 @@
 		if (k === 87) { configPanel(); } // [w]
 		if (k === 84) { $('#timer-visible').click(); } // [t]
 	};
-	// edge: is any version of ie including edge.
-	// ie: is anything prior to edge.
+	// edge: any version of IE including edge.
+	// ie: anything prior to edge.
 	var browser = {
 		edge: !!window.MSInputMethodContext,
 		ie: !!window.MSInputMethodContext && !!document.documentMode
@@ -373,7 +385,9 @@
 		hideElements($('#slideshow')[0], 'fast');
 		document.body.classList.remove('slideshow-started');
 		configPanel('show');
-		$('#restart').show();
+		if (playlist.array[0]) {
+			$('#restart').show();
+		}
 		$('#reset').hide();
 	};
 	var handleReset = function (e) {
@@ -409,7 +423,7 @@
 		$('#config .handle, #config .hide-config').click( function (e) { configPanel(); });
 
 		// currently no IE version supports CSS filters.
-		if (browser.edge) {
+		if (browser.ie) {
 			$('#desaturate').attr('disabled', true);
 		}
 
